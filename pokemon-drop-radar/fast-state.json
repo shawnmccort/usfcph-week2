@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-24T23:41:18.065Z",
+  "products": {
+    "pokemon-30th-celebration-binder-collection": {
+      "name": "30th Celebration Binder Collection",
+      "retailer": "Best Buy",
+      "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-30th-celebration-binder-collection/JJG2TL8245/sku/6685568",
+      "maxPrice": 45,
+      "status": "coming_soon",
+      "price": null,
+      "actionable": false,
+      "health": "ok",
+      "lastProbeAt": "2026-08-24T23:41:18.065Z",
+      "lastVerifiedAt": "2026-08-24T23:41:18.065Z",
+      "lastError": null,
+      "http": 200,
+      "clearCandidateCount": 0
+    }
+  }
+}
