@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "retailerIntervalsMs": {
+    "Best Buy": 90000,
+    "Target": 180000
+  },
+  "products": [
+    {"key":"pokemon-30th-celebration-binder-collection","name":"30th Celebration Binder Collection","retailer":"Best Buy","sku":"6685568","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-30th-celebration-binder-collection/JJG2TL8245/sku/6685568","maxPrice":45},
+    {"key":"pokemon-ascended-heroes-tin","name":"Ascended Heroes Tin","retailer":"Best Buy","sku":"6683819","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-tin-1-tin-per-order-styles-may-vary/JJG2TL3QT3/sku/6683819","maxPrice":35},
+    {"key":"pokemon-pitch-black-booster-box-36","name":"Pitch Black Booster Box (36 Packs)","retailer":"Best Buy","sku":"6678362","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-box-36-packs/JJG2TL8C7R/sku/6678362","maxPrice":180,"bestBuyAccessMode":"invite"},
+    {"key":"pokemon-delta-reign-booster-box-36","name":"Delta Reign Booster Box (36 Packs)","retailer":"Best Buy","sku":"6689677","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-booster-box-36-packs/JJG2TL8QYX/sku/6689677","maxPrice":180},
+    {"key":"pokemon-delta-reign-etb","name":"Delta Reign Elite Trainer Box","retailer":"Best Buy","sku":"6689672","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-elite-trainer-box/JJG2TL8QGY/sku/6689672","maxPrice":70},
+    {"key":"pokemon-delta-reign-booster-bundle","name":"Delta Reign Booster Bundle","retailer":"Best Buy","sku":"6689678","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-booster-bundle/JJG2TL8QGF/sku/6689678","maxPrice":40},
+    {"key":"pokemon-delta-reign-sleeved-booster","name":"Delta Reign Sleeved Booster","retailer":"Best Buy","sku":"6689674","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-sleeved-booster-1-sleeved-booster-per-order-styles-may-vary/JJG2TL33Z3/sku/6689674","maxPrice":7.5},
+    {"key":"pokemon-prismatic-evolutions-booster-bundle","name":"Prismatic Evolutions Booster Bundle","retailer":"Best Buy","sku":"6608206","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-scarlet-violet-prismatic-evolutions-booster-bundle/JJG2TL23JK/sku/6608206","maxPrice":40},
+    {"key":"pokemon-ascended-heroes-etb","name":"Ascended Heroes Elite Trainer Box","retailer":"Best Buy","sku":"6665449","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-elite-trainer-box/JJG2TLXSFV/sku/6665449","maxPrice":70},
+    {"key":"pokemon-ascended-heroes-booster-bundle","name":"Ascended Heroes Booster Bundle","retailer":"Best Buy","sku":"6665401","url":"https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-booster-bundle/JJG2TL3JP8/sku/6665401","maxPrice":40},
+    {"key":"pokemon-30th-celebration-etb","name":"30th Celebration Elite Trainer Box","retailer":"Target","sku":"1010892076","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-elite-trainer-box/-/A-1010892076","maxPrice":70},
+    {"key":"pokemon-30th-celebration-sylveon-ex-box","name":"30th Celebration Sylveon ex Box","retailer":"Target","sku":"1010892068","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-sylveon-ex-box/-/A-1010892068","maxPrice":35},
+    {"key":"pokemon-30th-celebration-knock-out-collection","name":"30th Celebration Knock Out Collection","retailer":"Target","sku":"1010892070","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-knock-out-collection/-/A-1010892070","maxPrice":15},
+    {"key":"pokemon-30th-celebration-tin","name":"30th Celebration Tin (Sylveon or Greninja)","retailer":"Target","sku":"1010892069","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-tin-sylveon-or-greninja-styles-may-vary/-/A-1010892069","maxPrice":35},
+    {"key":"pokemon-30th-celebration-tech-sticker-collection","name":"30th Celebration Tech Sticker Collection","retailer":"Target","sku":"1010892078","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-tech-sticker-collection-lucario-or-alolan-exeggutor-styles-may-vary/-/A-1010892078","maxPrice":25},
+    {"key":"pokemon-30th-celebration-greninja-ex-box","name":"30th Celebration Greninja ex Box","retailer":"Target","sku":"1010892065","url":"https://www.target.com/p/pok-233-mon-tading-card-game-30th-celebration-greninja-ex-box/-/A-1010892065","maxPrice":35},
+    {"key":"pokemon-30th-celebration-poster-collection","name":"30th Celebration Poster Collection","retailer":"Target","sku":"1010892067","url":"https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-poster-collection/-/A-1010892067","maxPrice":25}
+  ]
+}
