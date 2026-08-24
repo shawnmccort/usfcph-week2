@@ -25,18 +25,45 @@ jobs:
         with:
           ref: gh-pages
           fetch-depth: 0
+
+      - name: Validate dashboard controls and JavaScript
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const html = fs.readFileSync('pokemon-drop-radar/live.html','utf8');
+          const required = [
+            'id="actionableOnly"',
+            "$('#actionableOnly').onclick",
+            'id="reload"',
+            "$('#reload').onclick",
+            'Reload latest state',
+            'pdrActionableOnly'
+          ];
+          for (const value of required) {
+            if (!html.includes(value)) throw new Error(`Missing required dashboard control: ${value}`);
+          }
+          const scripts = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
+          if (!scripts.length) throw new Error('No dashboard JavaScript found');
+          for (const script of scripts) new Function(script);
+          console.log('Dashboard smoke test passed');
+          NODE
+
       - name: Configure Pages
+        id: configure
         uses: actions/configure-pages@v5
         with:
           enablement: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload dashboard
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
       - name: Write deployment report
         if: always()
         env:
