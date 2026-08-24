@@ -1,0 +1,42 @@
+name: Pokemon Fast Drop Watch
+
+on:
+  schedule:
+    - cron: "7 0,4,8,12,16,20 * * *"
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "pokemon-drop-radar/fast-products.json"
+      - "pokemon-drop-radar/fast-watch.mjs"
+      - ".github/workflows/pokemon-fast-drop-watch.yml"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  statuses: write
+
+jobs:
+  fast-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    concurrency:
+      group: pokemon-fast-drop-continuous
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Preflight fast retailer checks
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          FAST_WATCH_ONCE: "1"
+        run: node pokemon-drop-radar/fast-watch.mjs
+
+      - name: Watch high-demand Pokemon products continuously
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node pokemon-drop-radar/fast-watch.mjs
