@@ -1,0 +1,33 @@
+name: Patch queue clear transition guard
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-queue-clear-guard.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require verified CLEAR before closing alert PR
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('pokemon-drop-radar/queue-watch.mjs')
+          s = p.read_text()
+          old = "    }else if(alertPr){\n      await closeAlertPr(alertPr);alertPr=null;lastAlertAt=null;\n"
+          new = "    }else if(alertPr&&found.status==='CLEAR'){\n      await closeAlertPr(alertPr);alertPr=null;lastAlertAt=null;\n"
+          if old not in s:
+              raise SystemExit('expected queue-clear block not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/queue-watch.mjs
+          git commit -m "Require verified CLEAR before closing queue alert"
+          git push
