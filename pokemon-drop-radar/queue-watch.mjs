@@ -1,5 +1,7 @@
 const OWNER='shawnmccort';
 const REPO='usfcph-week2';
+const BASE_BRANCH='master';
+const ALERT_BRANCH='pokemon-queue-live-alert';
 const TCG_URL='https://www.pokemoncenter.com/category/tcg-cards';
 const QUEUE_HOSTS=['pokemoncenter','pokemon','tpci'];
 const POLL_MS=10_000;
@@ -9,6 +11,7 @@ const REMIND_MS=15*60_000;
 const RUN_MS=5*60*60*1000+45*60*1000;
 const ONCE=process.env.QUEUE_WATCH_ONCE==='1';
 const TEST_NTFY=process.env.QUEUE_NTFY_TEST==='1';
+const TEST_GITHUB=process.env.QUEUE_GITHUB_TEST==='1';
 const GH='https://api.github.com';
 const token=process.env.GITHUB_TOKEN;
 const sha=process.env.GITHUB_SHA;
@@ -52,12 +55,70 @@ async function detect(doSecondary){
   return{active:false,status:'CLEAR',signal:null,queueUrl:TCG_URL,eventId:null,primaryStatus:tcg.status};
 }
 
-async function gh(path,opts={}){const res=await fetch(`${GH}${path}`,{...opts,headers:{...headers,...(opts.headers||{})}});if(!res.ok)throw new Error(`GitHub ${res.status}: ${(await res.text()).slice(0,200)}`);if(res.status===204)return null;return res.json()}
+async function gh(path,opts={}){
+  const res=await fetch(`${GH}${path}`,{...opts,headers:{...headers,...(opts.headers||{})}});
+  if(!res.ok)throw new Error(`GitHub ${res.status}: ${(await res.text()).slice(0,240)}`);
+  if(res.status===204)return null;
+  return res.json();
+}
+async function ghMaybe(path,opts={}){
+  const res=await fetch(`${GH}${path}`,{...opts,headers:{...headers,...(opts.headers||{})}});
+  if(res.status===404)return null;
+  if(!res.ok)throw new Error(`GitHub ${res.status}: ${(await res.text()).slice(0,240)}`);
+  if(res.status===204)return null;
+  return res.json();
+}
 async function postStatus(context,state,description){if(!sha)return;try{await gh(`/repos/${OWNER}/${REPO}/statuses/${sha}`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({state,context,description:String(description).slice(0,140)})})}catch(e){console.log('Status update unavailable',context,String(e?.message||e))}}
-async function openAlertIssue(){try{const q=encodeURIComponent(`repo:${OWNER}/${REPO} is:issue is:open label:pokemon-queue-live`);const data=await gh(`/search/issues?q=${q}`);return data.items?.[0]||null}catch{return null}}
-async function ensureLabel(){const res=await fetch(`${GH}/repos/${OWNER}/${REPO}/labels/pokemon-queue-live`,{headers});if(res.ok)return;await fetch(`${GH}/repos/${OWNER}/${REPO}/labels`,{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({name:'pokemon-queue-live',color:'d73a4a',description:'Live Pokemon Center TCG queue alert'})}).catch(()=>{})}
-async function createAlert(found){await ensureLabel();return gh(`/repos/${OWNER}/${REPO}/issues`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'🚨 Pokémon Center TCG queue is LIVE',body:[`@${OWNER} — Pokémon Center is routing the TCG path into a queue.`,``,`**Open now:** ${found.queueUrl||TCG_URL}`,found.eventId?`**Event:** ${found.eventId}`:'',`**Detected:** ${new Date().toISOString()}`].filter(Boolean).join('\n'),assignees:[OWNER],labels:['pokemon-queue-live']})})}
-async function closeAlert(issue){try{await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}/comments`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:`Queue no longer detected as of ${new Date().toISOString()}. Closing this alert.`})});await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({state:'closed',state_reason:'completed'})})}catch(e){console.log('Issue close unavailable',String(e?.message||e))}}
+
+async function deleteBranch(branch){
+  try{await ghMaybe(`/repos/${OWNER}/${REPO}/git/refs/heads/${encodeURIComponent(branch)}`,{method:'DELETE'})}catch(e){console.log('Branch cleanup unavailable',branch,String(e?.message||e))}
+}
+async function createBranchWithFile(branch,path,text,message){
+  await deleteBranch(branch);
+  await gh(`/repos/${OWNER}/${REPO}/git/refs`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ref:`refs/heads/${branch}`,sha})});
+  await gh(`/repos/${OWNER}/${REPO}/contents/${path}`,{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({message,content:Buffer.from(text).toString('base64'),branch})});
+}
+async function requestReview(prNumber){
+  try{await gh(`/repos/${OWNER}/${REPO}/pulls/${prNumber}/requested_reviewers`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({reviewers:[OWNER]})});return true}catch(e){console.log('Reviewer request unavailable',String(e?.message||e));return false}
+}
+async function openAlertPr(){
+  try{const pulls=await gh(`/repos/${OWNER}/${REPO}/pulls?state=open&head=${encodeURIComponent(`${OWNER}:${ALERT_BRANCH}`)}&per_page=5`);return pulls?.[0]||null}catch{return null}
+}
+async function createAlertPr(found){
+  const body=[`@${OWNER} — **Pokémon Center TCG queue detected.**`,``,`Open now: ${found.queueUrl||TCG_URL}`,found.eventId?`Queue event: ${found.eventId}`:'',`Signal: ${found.signal||'verified queue signal'}`,`Detected: ${new Date().toISOString()}`,``,`This PR exists only to deliver a GitHub-native alert. No purchase or queue bypass is performed.`].filter(Boolean).join('\n');
+  const file=[`# Pokémon Center TCG queue LIVE`,``,`Detected: ${new Date().toISOString()}`,`Signal: ${found.signal||'verified queue signal'}`,`Open: ${found.queueUrl||TCG_URL}`,``].join('\n');
+  await createBranchWithFile(ALERT_BRANCH,'pokemon-drop-radar/LIVE_QUEUE.md',file,'Record live Pokemon Center TCG queue');
+  const pr=await gh(`/repos/${OWNER}/${REPO}/pulls`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'🚨 Pokémon Center TCG queue is LIVE',body,head:ALERT_BRANCH,base:BASE_BRANCH,maintainer_can_modify:true})});
+  await requestReview(pr.number);
+  return pr;
+}
+async function remindAlertPr(pr,found){
+  try{await gh(`/repos/${OWNER}/${REPO}/issues/${pr.number}/comments`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:`@${OWNER} — queue is **still live** as of ${new Date().toISOString()}. Open now: ${found.queueUrl||TCG_URL}`})})}catch(e){console.log('PR reminder unavailable',String(e?.message||e))}
+}
+async function closeAlertPr(pr){
+  try{await gh(`/repos/${OWNER}/${REPO}/pulls/${pr.number}`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({state:'closed'})})}catch(e){console.log('PR close unavailable',String(e?.message||e))}
+  await deleteBranch(ALERT_BRANCH);
+}
+async function createNotificationTestPr(){
+  const suffix=String(process.env.GITHUB_RUN_ID||Date.now());
+  const branch=`pokemon-queue-notification-test-${suffix}`;
+  const path='pokemon-drop-radar/NOTIFICATION_TEST.md';
+  const text=`# Pokémon Drop Radar notification test\n\nCreated ${new Date().toISOString()} to verify GitHub-native queue alerts.\n`;
+  try{
+    await createBranchWithFile(branch,path,text,'Test Pokemon queue notification path');
+    const pr=await gh(`/repos/${OWNER}/${REPO}/pulls`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'TEST — Pokémon Drop Radar backup alert',body:`@${OWNER} — one-time test of the GitHub-native backup notification path.`,head:branch,base:BASE_BRANCH,maintainer_can_modify:true})});
+    await requestReview(pr.number);
+    await postStatus('pokemon-center-github-notify','success',`GitHub backup PR created: #${pr.number}`);
+    console.log('GitHub notification test PR created',pr.number,branch);
+    return{pr,branch};
+  }catch(e){
+    await postStatus('pokemon-center-github-notify','failure',`GitHub backup PR failed: ${String(e?.message||e).slice(0,90)}`);
+    console.log('GitHub notification test FAILED',String(e?.message||e));
+    await deleteBranch(branch);
+    return null;
+  }
+}
+
 async function sendNtfy({title,message,priority,tags,click}){
   const topic=process.env.NTFY_TOPIC;
   if(!topic)return false;
@@ -76,9 +137,10 @@ if(TEST_NTFY){
   await postStatus('pokemon-center-ntfy',ok?'success':'failure',ok?'ntfy startup test accepted':'ntfy topic missing or send failed');
   console.log('ntfy startup test',ok?'accepted':'FAILED');
 }
+if(TEST_GITHUB)await createNotificationTestPr();
 
-let issue=await openAlertIssue();
-let lastAlertAt=issue?Date.parse(issue.updated_at||issue.created_at||'')||null:null;
+let alertPr=await openAlertPr();
+let lastAlertAt=alertPr?Date.parse(alertPr.updated_at||alertPr.created_at||'')||null:null;
 let lastSecondaryAt=0;
 let lastHeartbeatAt=0;
 let checks=0;
@@ -100,14 +162,19 @@ do{
 
     if(found.active){
       const reminder=lastAlertAt&&Date.now()-lastAlertAt>=REMIND_MS;
-      if(!issue||reminder){
-        const pushed=await pushQueue(found,Boolean(issue));
-        console.log('QUEUE ACTIVE — ntfy',pushed?'sent':'topic unavailable/send failed',reminder?'reminder':'new queue');
+      if(!alertPr){
+        const pushed=await pushQueue(found,false);
+        console.log('QUEUE ACTIVE — ntfy',pushed?'sent':'topic unavailable/send failed');
+        try{alertPr=await createAlertPr(found);console.log('GitHub-native backup PR created',alertPr.number)}catch(e){console.log('GitHub-native backup PR unavailable',String(e?.message||e))}
         lastAlertAt=Date.now();
-        if(!issue){try{issue=await createAlert(found);console.log('Backup GitHub issue created')}catch(e){console.log('Backup GitHub issue unavailable',String(e?.message||e))}}
+      }else if(reminder){
+        const pushed=await pushQueue(found,true);
+        await remindAlertPr(alertPr,found);
+        console.log('QUEUE ACTIVE reminder — ntfy',pushed?'sent':'topic unavailable/send failed');
+        lastAlertAt=Date.now();
       }
-    }else if(issue){
-      await closeAlert(issue);issue=null;lastAlertAt=null;
+    }else if(alertPr){
+      await closeAlertPr(alertPr);alertPr=null;lastAlertAt=null;
     }
 
     if(ONCE||checks===1||checks%6===0||found.active)console.log(new Date().toISOString(),found.active?'ACTIVE':found.status,found.signal||'',`checks=${checks}`,`errors=${errors}`);
