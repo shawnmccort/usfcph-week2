@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
@@ -34,3 +37,19 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Write deployment report
+        if: always()
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          DEPLOY_OUTCOME: ${{ steps.deployment.outcome }}
+          CONFIG_OUTCOME: ${{ steps.configure.outcome }}
+        run: |
+          mkdir -p pokemon-drop-radar
+          printf '{\n  "checkedAt": "%s",\n  "deploymentOutcome": "%s",\n  "pageUrl": "%s"\n}\n' "$(date -u +%FT%TZ)" "$DEPLOY_OUTCOME" "$PAGE_URL" > pokemon-drop-radar/pages-status.json
+          git config user.name "pokemon-dashboard[bot]"
+          git config user.email "pokemon-dashboard[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/pages-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Record dashboard deployment [skip ci]"
+            git push origin HEAD:gh-pages
+          fi
