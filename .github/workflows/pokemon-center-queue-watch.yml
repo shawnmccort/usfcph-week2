@@ -1,0 +1,33 @@
+name: Pokemon Center TCG Queue Watch
+
+on:
+  schedule:
+    - cron: "23 0,4,8,12,16,20 * * *"
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "pokemon-drop-radar/queue-watch.mjs"
+      - ".github/workflows/pokemon-center-queue-watch.yml"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  queue-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    concurrency:
+      group: pokemon-center-continuous-queue-watch
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Watch Pokemon Center TCG queue every minute
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node pokemon-drop-radar/queue-watch.mjs
