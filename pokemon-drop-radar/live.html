@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071019">
+<title>Pokémon Drop Radar</title>
+<style>
+:root{color-scheme:dark;--bg:#071019;--card:#0e1a27;--line:#22374c;--text:#eef8ff;--muted:#8fa5b9;--blue:#5ce1ff;--green:#63efa9;--amber:#ffd16e;--red:#ff8294}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 12% -15%,#173e5c 0,transparent 34rem),var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:900px;margin:auto;padding:20px 14px 64px}h1{margin:4px 0 6px;font-size:clamp(32px,8vw,52px);letter-spacing:-.04em}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);font-weight:900}.sub{color:var(--muted);font-size:13px;line-height:1.45}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.btn{appearance:none;border:1px solid var(--line);border-radius:11px;background:#122336;color:var(--text);padding:10px 13px;text-decoration:none;font-weight:800;cursor:pointer}.btn.primary{background:var(--blue);border-color:var(--blue);color:#041116}.btn:disabled{opacity:.55}.notice{border:1px solid var(--line);border-radius:13px;padding:11px 13px;margin:12px 0;font-size:12px}.notice.good{border-color:#2d7053;color:#b2f6d3}.notice.warn{border-color:#6d552c;color:#ffe09a}.notice.bad{border-color:#723544;color:#ffb5c1}.setup{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:13px;margin:12px 0}.setup.hidden{display:none}.setup input{width:100%;background:#07121d;border:1px solid #2a4259;color:var(--text);padding:10px;border-radius:9px;margin:5px 0 8px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.stat,.product{border:1px solid var(--line);background:rgba(14,26,39,.94);border-radius:14px}.stat{padding:12px}.stat b{display:block;font-size:24px}.stat span{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}.product{padding:13px;margin:9px 0}.product h3{margin:0;font-size:16px}.meta{font-size:10px;color:var(--muted);margin-top:3px}.listing{display:grid;grid-template-columns:1.2fr 1fr .8fr auto;gap:8px;align-items:center;border-top:1px solid #1c2d3e;padding-top:10px;margin-top:10px}.ret{font-weight:900}.tiny{font-size:10px;color:var(--muted)}.status{font-size:11px;font-weight:900;text-transform:uppercase}.status.good{color:var(--green)}.status.wait{color:var(--amber)}.status.bad{color:var(--red)}.status.neutral{color:#bbc8d4}.pill{display:inline-block;border:1px solid #3a5771;border-radius:999px;padding:2px 5px;font-size:8px;margin-left:4px}.pill.fp{color:#9ff2c4;border-color:#36755a}.toolbar{display:flex;gap:8px;align-items:center;margin:12px 0}.toolbar input{flex:1;background:#07121d;border:1px solid #2a4259;color:var(--text);padding:10px;border-radius:9px}.footer{margin-top:20px;color:#667b8f;font-size:10px;line-height:1.5;text-align:center}@media(max-width:650px){.stats{grid-template-columns:1fr 1fr}.listing{grid-template-columns:1fr 1fr}.listing .open{grid-column:1/-1;width:100%;text-align:center}.controls .btn{flex:1}.toolbar{display:block}.toolbar input{width:100%}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="eyebrow">⚡ Pokémon Drop Radar</div>
+<h1>Stock Watcher</h1>
+<div class="sub">The private GitHub watcher checks retailer pages automatically. This dashboard only reads the latest published result; reloading this page does not itself scrape retailers.</div>
+<div class="controls">
+<button id="reload" class="btn primary">↻ Reload latest watcher state</button>
+<a class="btn" href="https://github.com/shawnmccort/hello-world/actions/workflows/pokemon-watcher.yml" target="_blank" rel="noopener">▶ Force a scan on GitHub</a>
+</div>
+<div id="notice" class="notice warn">Connect your private dashboard state key.</div>
+<section id="setup" class="setup">
+<div class="sub">Keys stay only in this browser. You can also open a one-tap setup link using <code>#state=…&alerts=…</code>; the fragment is removed immediately after import.</div>
+<input id="stateKey" type="password" placeholder="Dashboard state key">
+<input id="alertTopic" type="password" placeholder="Alert topic (optional)">
+<div class="controls"><button id="save" class="btn primary">Save on this device</button><button id="clear" class="btn">Clear keys</button><a id="alertLink" class="btn" target="_blank" rel="noopener" style="display:none">Open ntfy feed</a></div>
+</section>
+<section class="stats">
+<div class="stat"><span>Products</span><b id="productCount">13</b></div>
+<div class="stat"><span>Listings</span><b id="listingCount">—</b></div>
+<div class="stat"><span>Actionable</span><b id="actionableCount">—</b></div>
+<div class="stat"><span>State age</span><b id="age">—</b></div>
+</section>
+<div class="toolbar"><input id="search" placeholder="Search product, retailer or SKU…"></div>
+<section id="cards"></section>
+<div class="footer">First-party and price-ceiling gates are enforced by the backend before alerts are sent. Blocked or ambiguous retailer responses fail closed. No auto-checkout, queue bypass, CAPTCHA solving, proxy rotation, or retailer-account automation.</div>
+</main>
+<script>
+const PRODUCTS=[
+['pokemon-30th-celebration-binder-collection','30th Celebration Binder Collection','binder collection',45,'Best Buy','6685568','https://www.bestbuy.com/product/pokemon-trading-card-game-30th-celebration-binder-collection/JJG2TL8245/sku/6685568'],
+['pokemon-ascended-heroes-tin','Ascended Heroes Tin','tin',35,'Best Buy','6683819','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-tin-1-tin-per-order-styles-may-vary/JJG2TL3QT3/sku/6683819'],
+['pokemon-pitch-black-booster-box-36','Pitch Black Booster Box (36 Packs)','booster box',180,'Best Buy','6678362','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-box-36-packs/JJG2TL8C7R/sku/6678362'],
+['pokemon-delta-reign-booster-box-36','Delta Reign Booster Box (36 Packs)','booster box',180,'Best Buy','6689677','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-booster-box-36-packs/JJG2TL8QYX/sku/6689677'],
+['pokemon-delta-reign-etb','Delta Reign Elite Trainer Box','elite trainer box',70,'Best Buy','6689672','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-elite-trainer-box/JJG2TL8QGY/sku/6689672'],
+['pokemon-delta-reign-booster-bundle','Delta Reign Booster Bundle','booster bundle',40,'Best Buy','6689678','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-booster-bundle/JJG2TL8QGF/sku/6689678'],
+['pokemon-delta-reign-sleeved-booster','Delta Reign Sleeved Booster','sleeved booster',7.5,'Best Buy','6689674','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-delta-reign-sleeved-booster-1-sleeved-booster-per-order-styles-may-vary/JJG2TL33Z3/sku/6689674'],
+['pokemon-prismatic-evolutions-booster-bundle','Prismatic Evolutions Booster Bundle','booster bundle',40,'Best Buy','6608206','https://www.bestbuy.com/product/pokemon-trading-card-game-scarlet-violet-prismatic-evolutions-booster-bundle/JJG2TL23JK/sku/6608206'],
+['pokemon-ascended-heroes-etb','Ascended Heroes Elite Trainer Box','elite trainer box',70,'Best Buy','6665449','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-elite-trainer-box/JJG2TLXSFV/sku/6665449'],
+['pokemon-ascended-heroes-booster-bundle','Ascended Heroes Booster Bundle','booster bundle',40,'Best Buy','6665401','https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-ascended-heroes-booster-bundle/JJG2TL3JP8/sku/6665401'],
+['pokemon-ascended-heroes-2-pack-blister','Ascended Heroes 2-Pack Blister','two-pack blister',15,'Walmart','18911118976','https://www.walmart.com/ip/18911118976'],
+['pokemon-surging-sparks-etb','Surging Sparks Elite Trainer Box','elite trainer box',70,'Walmart','10692607747','https://www.walmart.com/ip/10692607747'],
+['pokemon-scarlet-violet-base-etb','Scarlet & Violet Base Elite Trainer Box','elite trainer box',70,'Walmart','2668346140','https://www.walmart.com/ip/2668346140']];
+const URLS={
+'pokemon-30th-celebration-binder-collection|GameStop|20036370':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-30th-celebration-binder-collection/20036370.html',
+'pokemon-ascended-heroes-etb|Target|95082118':'https://www.target.com/p/-/A-95082118',
+'pokemon-ascended-heroes-etb|GameStop|437099':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-ascended-heroes-elite-trainer-box/437099.html',
+'pokemon-ascended-heroes-booster-bundle|GameStop|437101':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-ascended-heroes-booster-bundle/437101.html',
+'pokemon-prismatic-evolutions-booster-bundle|GameStop|20018824':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-prismatic-evolutions-booster-bundle/20018824.html',
+'pokemon-pitch-black-booster-box-36|GameStop|445749':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-pitch-black-booster-box/445749.html',
+'pokemon-delta-reign-booster-box-36|GameStop|20037565':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-delta-reign-booster-box/20037565.html',
+'pokemon-delta-reign-etb|GameStop|20037568':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-delta-reign-elite-trainer-box/20037568.html',
+'pokemon-delta-reign-booster-bundle|GameStop|20037566':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-delta-reign-booster-bundle/20037566.html',
+'pokemon-delta-reign-sleeved-booster|GameStop|20037567':'https://www.gamestop.com/toys-games/trading-cards/products/pokemon-trading-card-game-delta-reign-sleeved-booster-pack-styles-may-vary/20037567.html'};
+const R={B:'Best Buy',W:'Walmart',T:'Target',G:'GameStop'},S={u:'unknown',b:'blocked',e:'error',c:'coming_soon',o:'out_of_stock',i:'in_stock',a:'add_to_cart',r:'reservation_open',v:'invite_open',p:'preorder_open',q:'queue_open',d:'drawing_open'};
+const ACTION=new Set(['in_stock','add_to_cart','reservation_open','invite_open','preorder_open','queue_open','drawing_open']);
+let LIVE=null;
+const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function importKeys(){if(!location.hash)return;const p=new URLSearchParams(location.hash.slice(1)),s=p.get('state')||p.get('s'),a=p.get('alerts')||p.get('a');if(s)localStorage.setItem('pdrState',s);if(a)localStorage.setItem('pdrAlerts',a);if(s||a)history.replaceState(null,'',location.pathname+location.search)}
+function syncSetup(){const s=localStorage.getItem('pdrState')||'',a=localStorage.getItem('pdrAlerts')||'';$('#stateKey').value=s;$('#alertTopic').value=a;$('#setup').classList.toggle('hidden',!!s);if(a){$('#alertLink').href=`https://ntfy.sh/${encodeURIComponent(a)}`;$('#alertLink').style.display='inline-block'}else $('#alertLink').style.display='none'}
+function decode(raw){return{t:raw.t,run:raw.n,p:(raw.p||[]).map(([k,rows])=>({k,l:(rows||[]).map(x=>({r:R[x[0]]||x[0],s:S[x[1]]||'unknown',p:x[2],f:x[3]===1?true:x[3]===0?false:null,a:x[4]===1,q:x[5]}))}))}}
+function notice(msg,type='warn'){$('#notice').className=`notice ${type}`;$('#notice').textContent=msg}
+function tone(s){return ACTION.has(s)?'good':(['coming_soon','out_of_stock'].includes(s)?'wait':(['blocked','error'].includes(s)?'bad':'neutral'))}
+function fmtStatus(s){return String(s||'unknown').replaceAll('_',' ')}
+function rowUrl(p,r){const key=`${p[0]}|${r.r}|${r.q||''}`;if(URLS[key])return URLS[key];if(r.r===p[4]&&String(r.q||'')===String(p[5]))return p[6];if(r.r==='Walmart')return `https://www.walmart.com/ip/${encodeURIComponent(r.q||'')}`;if(r.r==='Target')return `https://www.target.com/p/-/A-${encodeURIComponent(r.q||'')}`;return p[6]}
+function render(){const q=$('#search').value.trim().toLowerCase(),map=new Map((LIVE?.p||[]).map(x=>[x.k,x]));let listings=0,actionable=0;const html=PRODUCTS.filter(p=>!q||`${p[1]} ${p[2]} ${p[4]} ${p[5]}`.toLowerCase().includes(q)).map(p=>{const rows=map.get(p[0])?.l||[{r:p[4],s:'unknown',p:null,f:null,a:false,q:p[5]}];listings+=rows.length;actionable+=rows.filter(x=>x.a).length;return `<article class="product"><h3>${esc(p[1])}</h3><div class="meta">${esc(p[2])} · ceiling $${Number(p[3]).toFixed(2)}</div>${rows.map(r=>`<div class="listing"><div><div class="ret">${esc(r.r)}${r.f===true?'<span class="pill fp">first-party</span>':''}</div><div class="tiny">SKU/TCIN ${esc(r.q||'—')}</div></div><div><div class="status ${tone(r.s)}">${esc(fmtStatus(r.s))}</div><div class="tiny">${r.a?'ALERT ELIGIBLE':'No alert'}</div></div><div><b>${r.p==null?'—':`$${Number(r.p).toFixed(2)}`}</b><div class="tiny">max $${Number(p[3]).toFixed(2)}</div></div><a class="btn open" href="${esc(rowUrl(p,r))}" target="_blank" rel="noopener">Open ↗</a></div>`).join('')}</article>`}).join('');$('#cards').innerHTML=html;$('#listingCount').textContent=listings;$('#actionableCount').textContent=actionable}
+async function load(manual=false){const key=localStorage.getItem('pdrState');if(!key){notice('Connect your private dashboard state key.','warn');$('#setup').classList.remove('hidden');return}const priorRun=LIVE?.run,priorTime=LIVE?.t;$('#reload').disabled=true;try{const res=await fetch(`https://ntfy.sh/${encodeURIComponent(key)}/json?poll=1&since=24h&x=${Date.now()}`,{cache:'no-store'});if(!res.ok)throw new Error(`state HTTP ${res.status}`);const lines=(await res.text()).trim().split(/\n+/).filter(Boolean);const events=lines.map(x=>{try{return JSON.parse(x)}catch{return null}}).filter(Boolean);const msgs=events.filter(x=>x.event==='message'&&Array.isArray(x.tags)&&x.tags.includes('state'));if(!msgs.length)throw new Error('no state messages found');const latest=msgs.sort((a,b)=>(a.time||0)-(b.time||0)).at(-1);const parsed=JSON.parse(latest.message);if(parsed.v!==2)throw new Error('unsupported state version');LIVE=decode(parsed);const mins=Math.max(0,Math.round((Date.now()-new Date(LIVE.t).getTime())/60000));$('#age').textContent=mins<1?'now':`${mins}m`;$('#age').style.color=mins<=12?'var(--green)':'var(--amber)';if(manual){const newer=(priorRun==null)||LIVE.run!==priorRun||LIVE.t!==priorTime;notice(newer?`Loaded watcher run #${LIVE.run}.`:`No newer backend scan yet — GitHub checks automatically about every 5 minutes.`,newer?'good':'warn')}else notice(mins<=12?`Connected · watcher run #${LIVE.run} · state fresh`:`Connected · state is ${mins} minutes old`,mins<=12?'good':'warn');render()}catch(e){notice(`Could not load live state: ${e.message}`,'bad')}finally{$('#reload').disabled=false}}
+$('#save').onclick=()=>{const s=$('#stateKey').value.trim(),a=$('#alertTopic').value.trim();if(s)localStorage.setItem('pdrState',s);if(a)localStorage.setItem('pdrAlerts',a);syncSetup();load(true)};
+$('#clear').onclick=()=>{localStorage.removeItem('pdrState');localStorage.removeItem('pdrAlerts');LIVE=null;syncSetup();notice('Keys cleared from this browser.','warn');render()};
+$('#reload').onclick=()=>load(true);$('#search').oninput=render;$('#notice').onclick=()=>$('#setup').classList.toggle('hidden');
+importKeys();syncSetup();render();load(false);setInterval(()=>load(false),60000);
+</script>
+</body></html>
