@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071019"><title>Pokémon Drop Radar</title></head><body style="margin:0;background:#071019;color:#eef8ff;font-family:system-ui"><div id="boot" style="padding:24px">Loading Pokémon Drop Radar…</div><script>
+(async()=>{
+  try{
+    const res=await fetch('live.html?ui='+Date.now(),{cache:'no-store'});
+    if(!res.ok) throw new Error('dashboard HTTP '+res.status);
+    let html=await res.text();
+    const patch=`<script>
+(()=>{
+  const KEY='pdrActionableOnly';
+  let only=localStorage.getItem(KEY)==='1';
+  function ensureButton(){
+    let btn=document.getElementById('actionableOnly');
+    if(btn)return btn;
+    const toolbar=document.querySelector('.toolbar');
+    if(!toolbar)return null;
+    btn=document.createElement('button');
+    btn.id='actionableOnly';
+    btn.type='button';
+    btn.className='btn';
+    btn.style.whiteSpace='nowrap';
+    toolbar.appendChild(btn);
+    btn.onclick=()=>{only=!only;localStorage.setItem(KEY,only?'1':'0');apply();};
+    return btn;
+  }
+  function apply(){
+    const btn=ensureButton();
+    if(btn){
+      btn.classList.toggle('primary',only);
+      btn.setAttribute('aria-pressed',String(only));
+      btn.textContent=only?'✓ Actionable only':'Actionable only';
+    }
+    document.querySelectorAll('#cards .product').forEach(card=>{
+      const rows=[...card.querySelectorAll('.listing')];
+      const actionableRows=rows.filter(row=>row.textContent.includes('ALERT ELIGIBLE'));
+      card.style.display=(!only||actionableRows.length)?'':'none';
+      rows.forEach(row=>{row.style.display=(!only||row.textContent.includes('ALERT ELIGIBLE'))?'':'none';});
+    });
+    if(only){
+      const shown=document.querySelectorAll('#cards .product:not([style*="display: none"])').length;
+      if(shown===0){
+        const cards=document.getElementById('cards');
+        if(cards&&!document.getElementById('noActionable')){
+          const empty=document.createElement('div');
+          empty.id='noActionable';
+          empty.className='notice good';
+          empty.textContent='No actionable products right now.';
+          cards.prepend(empty);
+        }
+      }else document.getElementById('noActionable')?.remove();
+    }else document.getElementById('noActionable')?.remove();
+  }
+  const cards=document.getElementById('cards');
+  if(cards)new MutationObserver(()=>queueMicrotask(apply)).observe(cards,{childList:true,subtree:true});
+  ensureButton();apply();
+  setInterval(apply,1000);
+})();
+<\/script>`;
+    html=html.replace('</body>',patch+'\n</body>');
+    document.open();document.write(html);document.close();
+  }catch(e){document.getElementById('boot').textContent='Could not load dashboard: '+e.message;}
+})();
+</script></body></html>
