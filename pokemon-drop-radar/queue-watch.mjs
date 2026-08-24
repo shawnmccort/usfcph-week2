@@ -173,7 +173,7 @@ do{
         console.log('QUEUE ACTIVE reminder — ntfy',pushed?'sent':'topic unavailable/send failed');
         lastAlertAt=Date.now();
       }
-    }else if(alertPr){
+    }else if(alertPr&&found.status==='CLEAR'){
       await closeAlertPr(alertPr);alertPr=null;lastAlertAt=null;
     }
 
