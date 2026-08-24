@@ -51,3 +51,5 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node pokemon-drop-radar/queue-watch.mjs
+
+# final queue guard deployed 2026-08-24
