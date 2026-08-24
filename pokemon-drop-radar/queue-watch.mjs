@@ -4,6 +4,7 @@ const TCG_URL='https://www.pokemoncenter.com/category/tcg-cards';
 const QUEUE_HOSTS=['pokemoncenter','pokemon','tpci'];
 const POLL_MS=60_000;
 const RUN_MS=5*60*60*1000+45*60*1000;
+const ONCE=process.env.QUEUE_WATCH_ONCE==='1';
 const GH='https://api.github.com';
 const token=process.env.GITHUB_TOKEN;
 if(!token)throw new Error('GITHUB_TOKEN missing');
@@ -29,32 +30,16 @@ async function detect(){
 }
 
 async function gh(path,opts={}){const res=await fetch(`${GH}${path}`,{...opts,headers:{...headers,...(opts.headers||{})}});if(!res.ok)throw new Error(`GitHub ${res.status}: ${(await res.text()).slice(0,200)}`);if(res.status===204)return null;return res.json()}
-async function openAlertIssue(){
-  const q=encodeURIComponent(`repo:${OWNER}/${REPO} is:issue is:open label:pokemon-queue-live`);
-  const data=await gh(`/search/issues?q=${q}`);return data.items?.[0]||null;
-}
-async function ensureLabel(){
-  const res=await fetch(`${GH}/repos/${OWNER}/${REPO}/labels/pokemon-queue-live`,{headers});if(res.ok)return;
-  await fetch(`${GH}/repos/${OWNER}/${REPO}/labels`,{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({name:'pokemon-queue-live',color:'d73a4a',description:'Live Pokemon Center TCG queue alert'})}).catch(()=>{});
-}
-async function createAlert(found){
-  await ensureLabel();
-  return gh(`/repos/${OWNER}/${REPO}/issues`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'🚨 Pokémon Center TCG queue is LIVE',body:[`@${OWNER} — Pokémon Center is routing the TCG path into a queue.`,``,`**Open now:** ${found.queueUrl||TCG_URL}`,found.eventId?`**Event:** ${found.eventId}`:'',`**Detected:** ${new Date().toISOString()}`].filter(Boolean).join('\n'),assignees:[OWNER],labels:['pokemon-queue-live']})});
-}
-async function closeAlert(issue){
-  await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}/comments`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:`Queue no longer detected as of ${new Date().toISOString()}. Closing this alert.`})});
-  await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({state:'closed',state_reason:'completed'})});
-}
-async function optionalNtfy(found){
-  const topic=process.env.NTFY_TOPIC;if(!topic||!found.active)return;
-  const res=await fetch('https://ntfy.sh',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({topic,title:'⚡ Pokémon Center TCG queue LIVE',message:'Open Pokémon Center now to join the TCG waiting room.',priority:5,tags:['zap','rotating_light'],click:found.queueUrl||TCG_URL})});
-  if(!res.ok)console.log('Optional ntfy send failed',res.status);
-}
+async function openAlertIssue(){const q=encodeURIComponent(`repo:${OWNER}/${REPO} is:issue is:open label:pokemon-queue-live`);const data=await gh(`/search/issues?q=${q}`);return data.items?.[0]||null;}
+async function ensureLabel(){const res=await fetch(`${GH}/repos/${OWNER}/${REPO}/labels/pokemon-queue-live`,{headers});if(res.ok)return;await fetch(`${GH}/repos/${OWNER}/${REPO}/labels`,{method:'POST',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({name:'pokemon-queue-live',color:'d73a4a',description:'Live Pokemon Center TCG queue alert'})}).catch(()=>{});}
+async function createAlert(found){await ensureLabel();return gh(`/repos/${OWNER}/${REPO}/issues`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({title:'🚨 Pokémon Center TCG queue is LIVE',body:[`@${OWNER} — Pokémon Center is routing the TCG path into a queue.`,``,`**Open now:** ${found.queueUrl||TCG_URL}`,found.eventId?`**Event:** ${found.eventId}`:'',`**Detected:** ${new Date().toISOString()}`].filter(Boolean).join('\n'),assignees:[OWNER],labels:['pokemon-queue-live']})});}
+async function closeAlert(issue){await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}/comments`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({body:`Queue no longer detected as of ${new Date().toISOString()}. Closing this alert.`})});await gh(`/repos/${OWNER}/${REPO}/issues/${issue.number}`,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({state:'closed',state_reason:'completed'})});}
+async function optionalNtfy(found){const topic=process.env.NTFY_TOPIC;if(!topic||!found.active)return;const res=await fetch('https://ntfy.sh',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({topic,title:'⚡ Pokémon Center TCG queue LIVE',message:'Open Pokémon Center now to join the TCG waiting room.',priority:5,tags:['zap','rotating_light'],click:found.queueUrl||TCG_URL})});if(!res.ok)console.log('Optional ntfy send failed',res.status);}
 
 let previousActive=null;
 const end=Date.now()+RUN_MS;
-console.log(`Continuous queue watch started; polling every ${POLL_MS/1000}s until ${new Date(end).toISOString()}`);
-while(Date.now()<end){
+console.log(ONCE?'Queue watcher preflight check':`Continuous queue watch started; polling every ${POLL_MS/1000}s until ${new Date(end).toISOString()}`);
+do{
   try{
     const found=await detect();
     const issue=await openAlertIssue();
@@ -63,7 +48,8 @@ while(Date.now()<end){
     else if(found.active&&previousActive===false){await optionalNtfy(found)}
     previousActive=found.active;
     console.log(new Date().toISOString(),found.active?'ACTIVE':'clear',found.signal||'');
-  }catch(e){console.error(new Date().toISOString(),'queue check error',String(e?.message||e))}
+  }catch(e){console.error(new Date().toISOString(),'queue check error',String(e?.message||e));if(ONCE)process.exitCode=1;}
+  if(ONCE)break;
   await sleep(POLL_MS);
-}
-console.log('Queue watch window complete; next scheduled runner should take over.');
+}while(Date.now()<end);
+console.log(ONCE?'Queue watcher preflight complete':'Queue watch window complete; next scheduled runner should take over.');
