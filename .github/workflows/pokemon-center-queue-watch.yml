@@ -11,8 +11,9 @@ on:
       - ".github/workflows/pokemon-center-queue-watch.yml"
 
 permissions:
-  contents: read
+  contents: write
   issues: write
+  pull-requests: write
   statuses: write
 
 jobs:
@@ -28,12 +29,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: Preflight Pokemon Center TCG queue and push path
+      - name: Preflight Pokemon Center TCG queue and notification path
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           QUEUE_WATCH_ONCE: "1"
-          QUEUE_NTFY_TEST: ${{ github.event_name == 'push' && '1' || '0' }}
+          QUEUE_GITHUB_TEST: ${{ github.event_name == 'push' && '1' || '0' }}
         run: node pokemon-drop-radar/queue-watch.mjs
 
       - name: Watch Pokemon Center TCG queue every 10 seconds
