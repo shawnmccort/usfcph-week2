@@ -1,0 +1,54 @@
+name: Patch fast direct ntfy
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-fast-direct-ntfy.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    env:
+      CONST_B64: "Y29uc3QgbnRmeVRvcGljPXByb2Nlc3MuZW52Lk5URllfVE9QSUN8fCcnOwpjb25zdCBOVEZZX1NFUlZFUj0ocHJvY2Vzcy5lbnYuTlRGWV9TRVJWRVJ8fCdodHRwczovL250Znkuc2gnKS5yZXBsYWNlKC9cLyQvLCcnKTsKZnVuY3Rpb24gcXVpZXROb3coKXsKICBjb25zdCBob3VyPU51bWJlcihuZXcgSW50bC5EYXRlVGltZUZvcm1hdCgnZW4tVVMnLHt0aW1lWm9uZTonQW1lcmljYS9OZXdfWW9yaycsaG91cjonMi1kaWdpdCcsaG91ckN5Y2xlOidoMjMnfSkuZm9ybWF0KG5ldyBEYXRlKCkpKTsKICByZXR1cm4gaG91cj49MCYmaG91cjw4Owp9CmFzeW5jIGZ1bmN0aW9uIHNlbmROdGZ5KHByb2R1Y3Qscm93KXsKICBpZighbnRmeVRvcGljfHxxdWlldE5vdygpKXJldHVybiBmYWxzZTsKICBjb25zdCBib2R5PXsKICAgIHRvcGljOm50ZnlUb3BpYywKICAgIHRpdGxlOmDwn5qoICR7cHJvZHVjdC5yZXRhaWxlcn06ICR7cHJvZHVjdC5uYW1lfWAsCiAgICBtZXNzYWdlOlsKICAgICAgU3RyaW5nKHJvdy5zdGF0dXN8fCcnKS5yZXBsYWNlQWxsKCdfJywnICcpLnRvVXBwZXJDYXNlKCksCiAgICAgIHJvdy5wcmljZSE9bnVsbD9gJCR7TnVtYmVyKHJvdy5wcmljZSkudG9GaXhlZCgyKX0gwrcgbWF4ICQke051bWJlcihwcm9kdWN0Lm1heFByaWNlKS50b0ZpeGVkKDIpfWA6YE1heCAkJHtOdW1iZXIocHJvZHVjdC5tYXhQcmljZSkudG9GaXhlZCgyKX1gLAogICAgICBwcm9kdWN0LnNrdT9gU0tVICR7cHJvZHVjdC5za3V9YDonJywKICAgICAgJ1ZlcmlmaWVkIGJ5IHRoZSBzZWNvbmRzLWxldmVsIFBva2Vtb24gRHJvcCBSYWRhcicKICAgIF0uZmlsdGVyKEJvb2xlYW4pLmpvaW4oJ1xuJyksCiAgICBwcmlvcml0eTo0LAogICAgdGFnczpbJ3JvdGF0aW5nX2xpZ2h0JywnY2FyZF9pbmRleF9kaXZpZGVycyddLAogICAgY2xpY2s6cm93LnVybHx8cHJvZHVjdC51cmwKICB9OwogIGNvbnN0IGN0cmw9bmV3IEFib3J0Q29udHJvbGxlcigpO2NvbnN0IHRpbWVyPXNldFRpbWVvdXQoKCk9PmN0cmwuYWJvcnQoKSw2MDAwKTsKICB0cnl7CiAgICBjb25zdCByZXM9YXdhaXQgZmV0Y2goTlRGWV9TRVJWRVIse21ldGhvZDonUE9TVCcsc2lnbmFsOmN0cmwuc2lnbmFsLGhlYWRlcnM6eydjb250ZW50LXR5cGUnOidhcHBsaWNhdGlvbi9qc29uJ30sYm9keTpKU09OLnN0cmluZ2lmeShib2R5KX0pOwogICAgaWYoIXJlcy5vayl0aHJvdyBuZXcgRXJyb3IoYG50ZnkgSFRUUCAke3Jlcy5zdGF0dXN9YCk7CiAgICByZXR1cm4gdHJ1ZTsKICB9Y2F0Y2goZSl7Y29uc29sZS5sb2coJ250Znkgc2VuZCBmYWlsZWQnLFN0cmluZyhlPy5tZXNzYWdlfHxlKSk7cmV0dXJuIGZhbHNlO30KICBmaW5hbGx5e2NsZWFyVGltZW91dCh0aW1lcik7fQp9Cg=="
+      LOGIC_B64: "ICAvLyBEaXJlY3QgbnRmeSBwYXRoOiBzZW5kIG9uY2UgcGVyIHZlcmlmaWVkIGxpdmUgY3ljbGUuIE92ZXJuaWdodCBoaXRzIGFyZQogIC8vIGRlZmVycmVkIGFuZCBzZW50IGFmdGVyIDA4OjAwIEVhc3Rlcm4gb25seSBpZiB0aGUgbGlzdGluZyBpcyBzdGlsbCBsaXZlLgogIGlmKG5leHQuYWN0aW9uYWJsZT09PXRydWUmJm50ZnlUb3BpYyl7CiAgICBpZihuZXh0Lm50ZnlTZW50Rm9yTGl2ZSE9PXRydWUpewogICAgICBpZihxdWlldE5vdygpKXsKICAgICAgICBuZXh0Lm50ZnlQZW5kaW5nPXRydWU7CiAgICAgIH1lbHNlewogICAgICAgIGNvbnN0IHNlbnROb3c9YXdhaXQgc2VuZE50ZnkocHJvZHVjdCxuZXh0KTsKICAgICAgICBpZihzZW50Tm93KXtuZXh0Lm50ZnlTZW50Rm9yTGl2ZT10cnVlO25leHQubnRmeVBlbmRpbmc9ZmFsc2U7fQogICAgICB9CiAgICB9CiAgfWVsc2UgaWYodHJhbnNpdGlvbj09PSdjbGVhcmVkJyl7CiAgICBuZXh0Lm50ZnlTZW50Rm9yTGl2ZT1mYWxzZTsKICAgIG5leHQubnRmeVBlbmRpbmc9ZmFsc2U7CiAgfQo="
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add immediate ntfy delivery to seconds watcher
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os,base64
+          p=Path('pokemon-drop-radar/fast-watch.mjs')
+          s=p.read_text()
+          const=base64.b64decode(os.environ['CONST_B64']).decode()
+          logic=base64.b64decode(os.environ['LOGIC_B64']).decode()
+          marker="const sha=process.env.GITHUB_SHA;\n"
+          if 'const ntfyTopic=process.env.NTFY_TOPIC' not in s:
+              if marker not in s: raise SystemExit('sha marker missing')
+              s=s.replace(marker,marker+const,1)
+          marker2="const prev=state.products[product.key]||null;const {next,transition}=applyObservation(prev,obs,product);state.products[product.key]=next;\n"
+          if 'Direct ntfy path:' not in s:
+              if marker2 not in s: raise SystemExit('transition marker missing')
+              s=s.replace(marker2,marker2+logic,1)
+          p.write_text(s)
+
+          w=Path('.github/workflows/pokemon-fast-drop-watch.yml')
+          y=w.read_text()
+          target="      - name: Watch high-demand Pokemon products continuously\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n        run: node pokemon-drop-radar/fast-watch.mjs\n"
+          repl="      - name: Watch high-demand Pokemon products continuously\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}\n        run: node pokemon-drop-radar/fast-watch.mjs\n"
+          if 'NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}' not in y:
+              if target not in y: raise SystemExit('workflow env marker missing')
+              y=y.replace(target,repl,1)
+          w.write_text(y)
+          PY
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs .github/workflows/pokemon-fast-drop-watch.yml
+          git commit -m "Send verified fast drops directly to ntfy"
+          git push
