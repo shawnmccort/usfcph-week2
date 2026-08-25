@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-25T03:42:35.662Z",
+  "updatedAt": "2026-08-25T03:43:07.976Z",
   "products": {
     "pokemon-30th-celebration-binder-collection": {
       "name": "30th Celebration Binder Collection",
@@ -11,8 +11,8 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:42:35.662Z",
-      "lastVerifiedAt": "2026-08-25T03:42:35.662Z",
+      "lastProbeAt": "2026-08-25T03:43:06.151Z",
+      "lastVerifiedAt": "2026-08-25T03:43:06.151Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
@@ -30,13 +30,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:35.134Z",
-      "lastVerifiedAt": "2026-08-25T03:41:35.134Z",
+      "lastProbeAt": "2026-08-25T03:42:38.851Z",
+      "lastVerifiedAt": "2026-08-25T03:42:38.851Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:38.119Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-elite-trainer-box/-/A-1010892076",
+          "bodyBytes": 315304,
+          "bodySha256": "ad668049727badf0b4d1e938b117bfd33597d3bb18a61a55cb69ef5893890dc6",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-ascended-heroes-tin": {
       "name": "Ascended Heroes Tin",
@@ -47,13 +65,15 @@
       "price": 21.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:49.649Z",
-      "lastVerifiedAt": "2026-08-25T03:41:49.649Z",
+      "lastProbeAt": "2026-08-25T03:42:54.782Z",
+      "lastVerifiedAt": "2026-08-25T03:42:54.782Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-pitch-black-booster-box-36": {
       "name": "Pitch Black Booster Box (36 Packs)",
@@ -64,15 +84,17 @@
       "price": 160.99,
       "actionable": true,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:53.296Z",
-      "lastVerifiedAt": "2026-08-25T03:41:53.296Z",
+      "lastProbeAt": "2026-08-25T03:42:58.367Z",
+      "lastVerifiedAt": "2026-08-25T03:42:58.367Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
       "clearCandidatePrice": null,
       "ntfySentForLive": true,
-      "ntfyPending": false
+      "ntfyPending": false,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-30th-celebration-sylveon-ex-box": {
       "name": "30th Celebration Sylveon ex Box",
@@ -83,13 +105,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:38.823Z",
-      "lastVerifiedAt": "2026-08-25T03:41:38.823Z",
+      "lastProbeAt": "2026-08-25T03:42:40.490Z",
+      "lastVerifiedAt": "2026-08-25T03:42:40.490Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:39.887Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-sylveon-ex-box/-/A-1010892068",
+          "bodyBytes": 311311,
+          "bodySha256": "9dc5bef28752bff24684dc901f0d093457e6dfb058df01c6156338f6aae8cfb4",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-delta-reign-booster-box-36": {
       "name": "Delta Reign Booster Box (36 Packs)",
@@ -100,13 +140,15 @@
       "price": 160.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:58.223Z",
-      "lastVerifiedAt": "2026-08-25T03:41:58.223Z",
+      "lastProbeAt": "2026-08-25T03:43:00.729Z",
+      "lastVerifiedAt": "2026-08-25T03:43:00.729Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-delta-reign-etb": {
       "name": "Delta Reign Elite Trainer Box",
@@ -117,13 +159,15 @@
       "price": 49.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:44.264Z",
-      "lastVerifiedAt": "2026-08-25T03:41:44.264Z",
+      "lastProbeAt": "2026-08-25T03:43:03.749Z",
+      "lastVerifiedAt": "2026-08-25T03:43:03.749Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-delta-reign-booster-bundle": {
       "name": "Delta Reign Booster Bundle",
@@ -134,13 +178,15 @@
       "price": 26.94,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:45.253Z",
-      "lastVerifiedAt": "2026-08-25T03:41:45.253Z",
+      "lastProbeAt": "2026-08-25T03:43:04.822Z",
+      "lastVerifiedAt": "2026-08-25T03:43:04.822Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-30th-celebration-knock-out-collection": {
       "name": "30th Celebration Knock Out Collection",
@@ -151,13 +197,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:43.153Z",
-      "lastVerifiedAt": "2026-08-25T03:41:43.153Z",
+      "lastProbeAt": "2026-08-25T03:42:42.570Z",
+      "lastVerifiedAt": "2026-08-25T03:42:42.570Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:41.866Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-knock-out-collection/-/A-1010892070",
+          "bodyBytes": 311955,
+          "bodySha256": "edafb57ab42074dfa8548de50480f35a9b62b279ff6e5448574ac95bf0fd2a99",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-delta-reign-sleeved-booster": {
       "name": "Delta Reign Sleeved Booster",
@@ -168,13 +232,15 @@
       "price": 4.49,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:47.915Z",
-      "lastVerifiedAt": "2026-08-25T03:41:47.915Z",
+      "lastProbeAt": "2026-08-25T03:43:07.976Z",
+      "lastVerifiedAt": "2026-08-25T03:43:07.976Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-prismatic-evolutions-booster-bundle": {
       "name": "Prismatic Evolutions Booster Bundle",
@@ -185,13 +251,15 @@
       "price": 26.94,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:51.545Z",
-      "lastVerifiedAt": "2026-08-25T03:41:51.545Z",
+      "lastProbeAt": "2026-08-25T03:42:56.237Z",
+      "lastVerifiedAt": "2026-08-25T03:42:56.237Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-ascended-heroes-etb": {
       "name": "Ascended Heroes Elite Trainer Box",
@@ -202,13 +270,15 @@
       "price": 49.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:55.711Z",
-      "lastVerifiedAt": "2026-08-25T03:41:55.711Z",
+      "lastProbeAt": "2026-08-25T03:42:59.364Z",
+      "lastVerifiedAt": "2026-08-25T03:42:59.364Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-30th-celebration-tin": {
       "name": "30th Celebration Tin (Sylveon or Greninja)",
@@ -219,13 +289,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:50.462Z",
-      "lastVerifiedAt": "2026-08-25T03:41:50.462Z",
+      "lastProbeAt": "2026-08-25T03:42:47.116Z",
+      "lastVerifiedAt": "2026-08-25T03:42:47.116Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:46.413Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-tin-sylveon-or-greninja-styles-may-vary/-/A-1010892069",
+          "bodyBytes": 312732,
+          "bodySha256": "eef790d4b2cb8adc20e3b12cc8fc20dfe24cc85578e4dd37643216b788b8ba75",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-ascended-heroes-booster-bundle": {
       "name": "Ascended Heroes Booster Bundle",
@@ -236,13 +324,15 @@
       "price": 26.94,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:59.343Z",
-      "lastVerifiedAt": "2026-08-25T03:41:59.343Z",
+      "lastProbeAt": "2026-08-25T03:43:02.802Z",
+      "lastVerifiedAt": "2026-08-25T03:43:02.802Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-30th-celebration-tech-sticker-collection": {
       "name": "30th Celebration Tech Sticker Collection",
@@ -253,13 +343,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:56.977Z",
-      "lastVerifiedAt": "2026-08-25T03:41:56.977Z",
+      "lastProbeAt": "2026-08-25T03:42:51.893Z",
+      "lastVerifiedAt": "2026-08-25T03:42:51.893Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:51.147Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-tech-sticker-collection-lucario-or-alolan-exeggutor-styles-may-vary/-/A-1010892078",
+          "bodyBytes": 313994,
+          "bodySha256": "09f74a4b346bbaef720c341d19a855ee2ec20a51131009af3d3c9528d8b50251",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-30th-celebration-greninja-ex-box": {
       "name": "30th Celebration Greninja ex Box",
@@ -270,13 +378,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:31.933Z",
-      "lastVerifiedAt": "2026-08-25T03:41:31.933Z",
+      "lastProbeAt": "2026-08-25T03:42:56.984Z",
+      "lastVerifiedAt": "2026-08-25T03:42:56.984Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:42:56.237Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-tading-card-game-30th-celebration-greninja-ex-box/-/A-1010892065",
+          "bodyBytes": 313901,
+          "bodySha256": "8fe28b2231798f90582acebdd71a797a7a6a47bebcf8f68dfc6bee390c0fe3ed",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     },
     "pokemon-30th-celebration-poster-collection": {
       "name": "30th Celebration Poster Collection",
@@ -287,13 +413,31 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:33.503Z",
-      "lastVerifiedAt": "2026-08-25T03:41:33.503Z",
+      "lastProbeAt": "2026-08-25T03:43:01.434Z",
+      "lastVerifiedAt": "2026-08-25T03:43:01.434Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": "not_actionable",
+      "lastEvidenceProbes": [
+        {
+          "checkedAt": "2026-08-25T03:43:00.729Z",
+          "http": 200,
+          "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-poster-collection/-/A-1010892067",
+          "bodyBytes": 312061,
+          "bodySha256": "0dff3f754656a221e447a32bca620032ee31f9a1c7d94209548e24cc335066d6",
+          "primaryStatus": "add_to_cart",
+          "structuredStatus": null,
+          "primaryPrice": null,
+          "structuredPrice": null,
+          "seller": "Target",
+          "isFirstParty": true,
+          "disagreement": false,
+          "actionable": false
+        }
+      ]
     }
   }
 }
