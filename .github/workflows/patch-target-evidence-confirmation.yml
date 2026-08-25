@@ -1,0 +1,109 @@
+name: Patch Target evidence confirmation
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-target-evidence-confirmation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add 2-of-2 Target confirmation and evidence
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('pokemon-drop-radar/fast-watch.mjs')
+          s=p.read_text()
+
+          if "node:crypto" not in s:
+              s=s.replace("import fs from 'node:fs/promises';\n", "import fs from 'node:fs/promises';\nimport {createHash} from 'node:crypto';\n", 1)
+
+          if "const EVIDENCE_BRANCH=" not in s:
+              s=s.replace("const STATE_PATH='pokemon-drop-radar/fast-state.json';\n", "const STATE_PATH='pokemon-drop-radar/fast-state.json';\nconst EVIDENCE_BRANCH='pokemon-fast-evidence';\n", 1)
+
+          old="""async function checkTarget(product){
+  const page=await getPage(product.url);
+  if(blocked(page.text,page.status))return{health:'blocked',http:page.status};
+  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`};
+  const scope=scopeAround(page.text,product.sku);const primary=targetPrimary(page.text,product);const structured=targetStructured(scope,product.sku);const seller=targetSeller(scope);
+  const status=primary.status||structured.status||'unknown';const price=primary.price??structured.price??null;
+  const under=price!=null&&price<=Number(product.maxPrice);
+  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable:ACTIONABLE.has(status)&&seller.isFirstParty===true&&under,http:page.status};
+}
+async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTarget(product):{health:'error',error:'unsupported retailer'};}
+"""
+          new="""async function checkTarget(product){
+  const checkedAt=new Date().toISOString();
+  const page=await getPage(product.url);
+  if(blocked(page.text,page.status))return{health:'blocked',http:page.status,evidence:{checkedAt,http:page.status,health:'blocked'}};
+  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`,evidence:{checkedAt,http:page.status,health:'error'}};
+  const scope=scopeAround(page.text,product.sku);const primary=targetPrimary(page.text,product);const structured=targetStructured(scope,product.sku);const seller=targetSeller(scope);
+  // Explicit disagreement fails closed. A visible Add to Cart should not beat structured OutOfStock evidence.
+  const disagreement=ACTIONABLE.has(primary.status)&&structured.status==='out_of_stock';
+  const status=disagreement?'unknown':(primary.status||structured.status||'unknown');const price=primary.price??structured.price??null;
+  const under=price!=null&&price<=Number(product.maxPrice);
+  const actionable=ACTIONABLE.has(status)&&seller.isFirstParty===true&&under;
+  const evidence={
+    checkedAt,http:page.status,finalUrl:page.url||product.url,bodyBytes:Buffer.byteLength(page.text||''),
+    bodySha256:createHash('sha256').update(page.text||'').digest('hex'),
+    primaryStatus:primary.status||null,structuredStatus:structured.status||null,
+    primaryPrice:primary.price??null,structuredPrice:structured.price??null,
+    seller:seller.seller,isFirstParty:seller.isFirstParty,disagreement,actionable
+  };
+  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable,http:page.status,evidence};
+}
+async function checkTargetConfirmed(product){
+  const first=await checkTarget(product);
+  if(first.actionable!==true)return{...first,evidenceVerdict:first.evidence?.disagreement?'parser_disagreement':'not_actionable',evidenceProbes:[first.evidence].filter(Boolean)};
+  await sleep(1500);
+  const second=await checkTarget(product);
+  const probes=[first.evidence,second.evidence].filter(Boolean);
+  if(second.actionable!==true){
+    return{...second,status:'unknown',actionable:false,evidenceVerdict:'failed_2_of_2_confirmation',evidenceProbes:probes};
+  }
+  return{...second,evidenceVerdict:'confirmed_2_of_2',evidenceProbes:probes};
+}
+async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTargetConfirmed(product):{health:'error',error:'unsupported retailer'};}
+"""
+          if old not in s:
+              raise SystemExit('Target checker marker not found')
+          s=s.replace(old,new,1)
+
+          # Keep evidence with state so the latest live and clear probes remain inspectable.
+          s=s.replace("const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null};",
+                      "const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null};",1)
+          s=s.replace("return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};",
+                      "return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null},transition:null};",1)
+
+          # On a newly confirmed Target hit, persist the live evidence; on clear, preserve clear evidence too.
+          old_bec="const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};"
+          new_bec="const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,...(became?{lastLiveEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}}:{})},transition:became?'new':null};"
+          if old_bec not in s: raise SystemExit('became marker missing')
+          s=s.replace(old_bec,new_bec,1)
+
+          old_clear="return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};"
+          new_clear="return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,lastClearEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}},transition:'cleared'};"
+          if old_clear not in s: raise SystemExit('clear marker missing')
+          s=s.replace(old_clear,new_clear,1)
+
+          # Put confirmation strength in the phone notification.
+          needle="      'Verified by the seconds-level Pokemon Drop Radar'\n"
+          repl="      row.lastEvidenceVerdict==='confirmed_2_of_2'?'CONFIRMED 2/2 independent reads':'Verified by the seconds-level Pokemon Drop Radar',\n      'Verified by the seconds-level Pokemon Drop Radar'\n"
+          if needle in s and "CONFIRMED 2/2 independent reads" not in s:
+              s=s.replace(needle,repl,1)
+
+          p.write_text(s)
+          PY
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs
+          git commit -m "Require 2-of-2 Target confirmation and retain evidence"
+          git push
