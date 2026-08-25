@@ -36,19 +36,10 @@ jobs:
               if marker2 not in s: raise SystemExit('transition marker missing')
               s=s.replace(marker2,marker2+logic,1)
           p.write_text(s)
-
-          w=Path('.github/workflows/pokemon-fast-drop-watch.yml')
-          y=w.read_text()
-          target="      - name: Watch high-demand Pokemon products continuously\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n        run: node pokemon-drop-radar/fast-watch.mjs\n"
-          repl="      - name: Watch high-demand Pokemon products continuously\n        env:\n          GITHUB_TOKEN: ${{ github.token }}\n          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}\n        run: node pokemon-drop-radar/fast-watch.mjs\n"
-          if 'NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}' not in y:
-              if target not in y: raise SystemExit('workflow env marker missing')
-              y=y.replace(target,repl,1)
-          w.write_text(y)
           PY
           node --check pokemon-drop-radar/fast-watch.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pokemon-drop-radar/fast-watch.mjs .github/workflows/pokemon-fast-drop-watch.yml
+          git add pokemon-drop-radar/fast-watch.mjs
           git commit -m "Send verified fast drops directly to ntfy"
           git push
