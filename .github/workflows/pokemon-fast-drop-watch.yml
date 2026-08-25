@@ -42,4 +42,4 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node pokemon-drop-radar/fast-watch.mjs
 
-# secret-enabled restart 2026-08-24 22:17 ET
+# Target overnight override restart 2026-08-24 22:23 ET
