@@ -17,6 +17,8 @@ const token=process.env.GITHUB_TOKEN;
 const sha=process.env.GITHUB_SHA;
 const ntfyTopic=process.env.NTFY_TOPIC||'';
 const NTFY_SERVER=(process.env.NTFY_SERVER||'https://ntfy.sh').replace(/\/$/,'');
+const SUPABASE_URL='https://avtjrtqzwjiefpowboqo.supabase.co';
+const SUPABASE_KEY='sb_publishable_yPWA8Ghh-UpxNGt-wSVkvw_3sOkdFTr';
 function easternClock(now=new Date()){
   const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(now).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
   return {year:Number(parts.year),month:Number(parts.month),day:Number(parts.day),hour:Number(parts.hour)};
@@ -51,6 +53,19 @@ async function sendNtfy(product,row){
     if(!res.ok)throw new Error(`ntfy HTTP ${res.status}`);
     return true;
   }catch(e){console.log('ntfy send failed',String(e?.message||e));return false;}
+  finally{clearTimeout(timer);}
+}
+async function publishRealtimeState(state){
+  if(!ntfyTopic)return;
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),5000);
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/ingest_pokemon_fast_state`,{
+      method:'POST',signal:ctrl.signal,
+      headers:{'apikey':SUPABASE_KEY,'content-type':'application/json'},
+      body:JSON.stringify({p_secret:ntfyTopic,p_state:state})
+    });
+    if(!res.ok)throw new Error(`Supabase realtime HTTP ${res.status}`);
+  }catch(e){console.log('realtime state publish failed',String(e?.message||e));}
   finally{clearTimeout(timer);}
 }
 if(!token)throw new Error('GITHUB_TOKEN missing');
@@ -105,6 +120,7 @@ async function loadState(){
 }
 async function saveState(state){
   state.updatedAt=new Date().toISOString();
+  await publishRealtimeState(state);
   await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\n','Update fast Pokemon watcher state [skip ci]');
 }
 
