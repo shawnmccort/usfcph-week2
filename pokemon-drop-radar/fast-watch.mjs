@@ -26,7 +26,7 @@ function easternClock(now=new Date()){
 }
 function targetTonightOverride(product,now=new Date()){
   const t=easternClock(now);
-  return product?.retailer==='Target'&&t.year===2026&&t.month===8&&t.day===25&&t.hour>=0&&t.hour<3;
+  return product?.retailer==='Target'&&t.year===2026&&t.month===8&&t.day===25&&t.hour>=0&&t.hour<8;
 }
 function quietNow(product){
   const t=easternClock();
