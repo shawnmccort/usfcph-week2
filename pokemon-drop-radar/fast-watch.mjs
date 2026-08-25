@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 
 const OWNER='shawnmccort';
 const REPO='usfcph-week2';
@@ -41,6 +42,7 @@ async function sendNtfy(product,row){
       String(row.status||'').replaceAll('_',' ').toUpperCase(),
       row.price!=null?`$${Number(row.price).toFixed(2)} · max $${Number(product.maxPrice).toFixed(2)}`:`Max $${Number(product.maxPrice).toFixed(2)}`,
       product.sku?`SKU ${product.sku}`:'',
+      row.lastEvidenceVerdict==='confirmed_2_of_2'?'CONFIRMED 2/2 independent reads':'Verified by the seconds-level Pokemon Drop Radar',
       'Verified by the seconds-level Pokemon Drop Radar'
     ].filter(Boolean).join('\n'),
     priority:targetTonightOverride(product)?5:4,
@@ -258,15 +260,36 @@ function targetStructured(scope,sku){
   return{status:null,price:null};
 }
 async function checkTarget(product){
+  const checkedAt=new Date().toISOString();
   const page=await getPage(product.url);
-  if(blocked(page.text,page.status))return{health:'blocked',http:page.status};
-  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`};
+  if(blocked(page.text,page.status))return{health:'blocked',http:page.status,evidence:{checkedAt,http:page.status,health:'blocked'}};
+  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`,evidence:{checkedAt,http:page.status,health:'error'}};
   const scope=scopeAround(page.text,product.sku);const primary=targetPrimary(page.text,product);const structured=targetStructured(scope,product.sku);const seller=targetSeller(scope);
-  const status=primary.status||structured.status||'unknown';const price=primary.price??structured.price??null;
+  const disagreement=ACTIONABLE.has(primary.status)&&structured.status==='out_of_stock';
+  const status=disagreement?'unknown':(primary.status||structured.status||'unknown');const price=primary.price??structured.price??null;
   const under=price!=null&&price<=Number(product.maxPrice);
-  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable:ACTIONABLE.has(status)&&seller.isFirstParty===true&&under,http:page.status};
+  const actionable=ACTIONABLE.has(status)&&seller.isFirstParty===true&&under;
+  const evidence={
+    checkedAt,http:page.status,finalUrl:page.url||product.url,bodyBytes:Buffer.byteLength(page.text||''),
+    bodySha256:createHash('sha256').update(page.text||'').digest('hex'),
+    primaryStatus:primary.status||null,structuredStatus:structured.status||null,
+    primaryPrice:primary.price??null,structuredPrice:structured.price??null,
+    seller:seller.seller,isFirstParty:seller.isFirstParty,disagreement,actionable
+  };
+  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable,http:page.status,evidence};
 }
-async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTarget(product):{health:'error',error:'unsupported retailer'};}
+async function checkTargetConfirmed(product){
+  const first=await checkTarget(product);
+  if(first.actionable!==true)return{...first,evidenceVerdict:first.evidence?.disagreement?'parser_disagreement':'not_actionable',evidenceProbes:[first.evidence].filter(Boolean)};
+  await sleep(1500);
+  const second=await checkTarget(product);
+  const probes=[first.evidence,second.evidence].filter(Boolean);
+  if(second.actionable!==true){
+    return{...second,status:'unknown',actionable:false,evidenceVerdict:'failed_2_of_2_confirmation',evidenceProbes:probes};
+  }
+  return{...second,evidenceVerdict:'confirmed_2_of_2',evidenceProbes:probes};
+}
+async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTargetConfirmed(product):{health:'error',error:'unsupported retailer'};}
 
 async function openAlertPr(){
   try{const pulls=await gh(`/repos/${OWNER}/${REPO}/pulls?state=open&head=${encodeURIComponent(`${OWNER}:${ALERT_BRANCH}`)}&per_page=5`);return pulls?.[0]||null;}catch{return null;}
@@ -301,17 +324,17 @@ function applyObservation(prev,obs,product){
   const safeStatus=obs.actionable===true||!ACTIONABLE.has(obs.status)?obs.status:'unknown';
   if(!prev){
     if(obs.health!=='ok')return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:'unknown',price:null,actionable:false,health:obs.health,lastProbeAt:now,lastError:obs.error||null,http:obs.http??null,clearCandidateCount:0},transition:null};
-    return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};
+    return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null},transition:null};
   }
   if(obs.health!=='ok')return{next:{...prev,health:obs.health,lastProbeAt:now,lastError:obs.error||null,http:obs.http??null},transition:null};
-  const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null};
+  const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null};
   if(prev.actionable===true&&obs.actionable!==true){
     const same=prev.clearCandidateStatus===safeStatus;const count=same?Number(prev.clearCandidateCount||0)+1:1;
     if(count<2)return{next:{...base,clearCandidateStatus:safeStatus,clearCandidatePrice:obs.price??null,clearCandidateCount:count},transition:null};
-    return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};
+    return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,lastClearEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}},transition:'cleared'};
   }
   const became=prev.actionable!==true&&obs.actionable===true;
-  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};
+  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,...(became?{lastLiveEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}}:{})},transition:became?'new':null};
 }
 
 async function preflight(){
