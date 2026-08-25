@@ -88,19 +88,29 @@ const decode=s=>String(s||'').replace(/&amp;/gi,'&').replace(/&quot;/gi,'"').rep
 const strip=html=>decode(String(html||'').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,' ').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
 const normalizeEscaped=raw=>String(raw||'').replace(/\\u0026/g,'&').replace(/\\u003c/gi,'<').replace(/\\u003e/gi,'>').replace(/\\"/g,'"').replace(/\\n/g,' ');
 
-function bestBuyContext(html,sku){
-  const needles=[`"skuId":"${sku}"`,`\\"skuId\\":\\"${sku}\\"`];
-  for(const needle of needles){
-    const idx=html.indexOf(needle);
-    if(idx>=0)return normalizeEscaped(html.slice(Math.max(0,idx-700),Math.min(html.length,idx+12000)));
+function bestBuySkuState(html,sku){
+  const patterns=[`"skuId":"${sku}"`,`\\"skuId\\":\\"${sku}\\"`];
+  const positions=[];
+  for(const needle of patterns){
+    let from=0;
+    while(true){const i=html.indexOf(needle,from);if(i<0)break;positions.push(i);from=i+needle.length;}
   }
-  return '';
+  positions.sort((a,b)=>a-b);
+  for(const idx of positions){
+    const ctx=normalizeEscaped(html.slice(Math.max(0,idx-500),Math.min(html.length,idx+9000)));
+    const skuMark=`"skuId":"${sku}"`;
+    const mark=ctx.indexOf(skuMark);
+    const local=ctx.slice(Math.max(0,mark),Math.min(ctx.length,mark>=0?mark+7500:7500));
+    const block=local.match(/"buttonStates"\s*:\s*\[([\s\S]{0,2600}?)\]/i)?.[1]||local;
+    const state=block.match(/"buttonState"\s*:\s*"([A-Z0-9_-]+)"/i)?.[1];
+    const text=block.match(/"displayText"\s*:\s*"([^"\n]{1,120})"/i)?.[1]||null;
+    if(state)return{state:state.toUpperCase(),text,ctx:local};
+  }
+  return null;
 }
-function bestBuyStatus(ctx,product){
-  if(!ctx)return null;
-  const block=ctx.match(/"buttonStates"\s*:\s*\[([\s\S]{0,3200}?)\]/i)?.[1]||ctx;
-  const raw=block.match(/"buttonState"\s*:\s*"([A-Z0-9_-]+)"/i)?.[1]?.toUpperCase();
-  if(!raw)return null;
+function bestBuyStatus(found,product){
+  if(!found)return null;
+  const raw=found.state;
   if(raw==='COMING_SOON')return'coming_soon';
   if(['SOLD_OUT','OUT_OF_STOCK','UNAVAILABLE','NOT_AVAILABLE','DISABLED'].includes(raw))return'out_of_stock';
   if(['PREORDER','PRE_ORDER','PREORDER_AVAILABLE'].includes(raw))return'preorder_open';
@@ -135,9 +145,9 @@ async function checkBestBuy(product){
   const page=await getPage(product.url);
   if(blocked(page.text,page.status))return{health:'blocked',http:page.status};
   if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`};
-  const ctx=bestBuyContext(page.text,product.sku);
-  const status=bestBuyStatus(ctx,product)||bestBuySafeFallback(page.text);
-  const price=bestBuyPrice(ctx);
+  const found=bestBuySkuState(page.text,product.sku);
+  const status=bestBuyStatus(found,product)||bestBuySafeFallback(page.text);
+  const price=bestBuyPrice(found?.ctx||'');
   const special=ACCESS.has(status);
   const under=price!=null&&price<=Number(product.maxPrice);
   return{health:'ok',status,price,isFirstParty:true,actionable:ACTIONABLE.has(status)&&(special||under),http:page.status};
