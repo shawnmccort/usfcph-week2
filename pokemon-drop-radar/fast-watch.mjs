@@ -10,7 +10,7 @@ const ALERT_PATH='pokemon-drop-radar/FAST_LIVE.md';
 const GH='https://api.github.com';
 const RUN_MS=5*60*60*1000+45*60*1000;
 const HEARTBEAT_MS=60_000;
-const SAVE_MS=5*60_000;
+const SAVE_MS=30_000;
 const BLOCK_BACKOFF_MS=15*60_000;
 const ONCE=process.env.FAST_WATCH_ONCE==='1';
 const token=process.env.GITHUB_TOKEN;
