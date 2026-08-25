@@ -12,6 +12,10 @@ permissions:
 jobs:
   patch:
     runs-on: ubuntu-latest
+    env:
+      FN_B64: "YXN5bmMgZnVuY3Rpb24gcHVibGlzaFJlYWx0aW1lU3RhdGUoc3RhdGUpewogIGlmKCFudGZ5VG9waWMpcmV0dXJuOwogIGNvbnN0IGN0cmw9bmV3IEFib3J0Q29udHJvbGxlcigpO2NvbnN0IHRpbWVyPXNldFRpbWVvdXQoKCk9PmN0cmwuYWJvcnQoKSw1MDAwKTsKICB0cnl7CiAgICBjb25zdCByZXM9YXdhaXQgZmV0Y2goYCR7U1VQQUJBU0VfVVJMfS9yZXN0L3YxL3JwYy9pbmdlc3RfcG9rZW1vbl9mYXN0X3N0YXRlYCx7CiAgICAgIG1ldGhvZDonUE9TVCcsc2lnbmFsOmN0cmwuc2lnbmFsLAogICAgICBoZWFkZXJzOnsnYXBpa2V5JzpTVVBBQkFTRV9LRVksJ2NvbnRlbnQtdHlwZSc6J2FwcGxpY2F0aW9uL2pzb24nfSwKICAgICAgYm9keTpKU09OLnN0cmluZ2lmeSh7cF9zZWNyZXQ6bnRmeVRvcGljLHBfc3RhdGU6c3RhdGV9KQogICAgfSk7CiAgICBpZighcmVzLm9rKXRocm93IG5ldyBFcnJvcihgU3VwYWJhc2UgcmVhbHRpbWUgSFRUUCAke3Jlcy5zdGF0dXN9YCk7CiAgfWNhdGNoKGUpe2NvbnNvbGUubG9nKCdyZWFsdGltZSBzdGF0ZSBwdWJsaXNoIGZhaWxlZCcsU3RyaW5nKGU/Lm1lc3NhZ2V8fGUpKTt9CiAgZmluYWxseXtjbGVhclRpbWVvdXQodGltZXIpO30KfQo="
+      OLD_B64: "YXN5bmMgZnVuY3Rpb24gc2F2ZVN0YXRlKHN0YXRlKXsKICBzdGF0ZS51cGRhdGVkQXQ9bmV3IERhdGUoKS50b0lTT1N0cmluZygpOwogIGF3YWl0IHdyaXRlQnJhbmNoVGV4dChTVEFURV9CUkFOQ0gsU1RBVEVfUEFUSCxKU09OLnN0cmluZ2lmeShzdGF0ZSxudWxsLDIpKydcbicsJ1VwZGF0ZSBmYXN0IFBva2Vtb24gd2F0Y2hlciBzdGF0ZSBbc2tpcCBjaV0nKTsKfQo="
+      NEW_B64: "YXN5bmMgZnVuY3Rpb24gc2F2ZVN0YXRlKHN0YXRlKXsKICBzdGF0ZS51cGRhdGVkQXQ9bmV3IERhdGUoKS50b0lTT1N0cmluZygpOwogIGF3YWl0IHB1Ymxpc2hSZWFsdGltZVN0YXRlKHN0YXRlKTsKICBhd2FpdCB3cml0ZUJyYW5jaFRleHQoU1RBVEVfQlJBTkNILFNUQVRFX1BBVEgsSlNPTi5zdHJpbmdpZnkoc3RhdGUsbnVsbCwyKSsnXG4nLCdVcGRhdGUgZmFzdCBQb2tlbW9uIHdhdGNoZXIgc3RhdGUgW3NraXAgY2ldJyk7Cn0K"
     steps:
       - uses: actions/checkout@v4
       - name: Publish fast state to Supabase realtime
@@ -19,6 +23,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import os, base64
           p=Path('pokemon-drop-radar/fast-watch.mjs')
           s=p.read_text()
           marker="const NTFY_SERVER=(process.env.NTFY_SERVER||'https://ntfy.sh').replace(/\\\/$/,'');\n"
@@ -26,39 +31,17 @@ jobs:
           if "const SUPABASE_URL=" not in s:
               if marker not in s: raise SystemExit('supabase constant marker missing')
               s=s.replace(marker,marker+insert,1)
-
-          fn_marker="if(!token)throw new Error('GITHUB_TOKEN missing');\n"
-          fn="""async function publishRealtimeState(state){
-  if(!ntfyTopic)return;
-  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),5000);
-  try{
-    const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/ingest_pokemon_fast_state`,{
-      method:'POST',signal:ctrl.signal,
-      headers:{'apikey':SUPABASE_KEY,'content-type':'application/json'},
-      body:JSON.stringify({p_secret:ntfyTopic,p_state:state})
-    });
-    if(!res.ok)throw new Error(`Supabase realtime HTTP ${res.status}`);
-  }catch(e){console.log('realtime state publish failed',String(e?.message||e));}
-  finally{clearTimeout(timer);}
-}
-"""
+          fn=base64.b64decode(os.environ['FN_B64']).decode()
           if 'async function publishRealtimeState' not in s:
-              if fn_marker not in s: raise SystemExit('function marker missing')
-              s=s.replace(fn_marker,fn+fn_marker,1)
-
-          old="""async function saveState(state){
-  state.updatedAt=new Date().toISOString();
-  await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\\n','Update fast Pokemon watcher state [skip ci]');
-}
-"""
-          new="""async function saveState(state){
-  state.updatedAt=new Date().toISOString();
-  await publishRealtimeState(state);
-  await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\\n','Update fast Pokemon watcher state [skip ci]');
-}
-"""
-          if old not in s: raise SystemExit('saveState marker missing')
-          s=s.replace(old,new,1)
+              m="if(!token)throw new Error('GITHUB_TOKEN missing');\n"
+              if m not in s: raise SystemExit('function marker missing')
+              s=s.replace(m,fn+m,1)
+          old=base64.b64decode(os.environ['OLD_B64']).decode()
+          new=base64.b64decode(os.environ['NEW_B64']).decode()
+          if old in s:
+              s=s.replace(old,new,1)
+          elif 'await publishRealtimeState(state);' not in s:
+              raise SystemExit('saveState marker missing')
           p.write_text(s)
           PY
           node --check pokemon-drop-radar/fast-watch.mjs
