@@ -29,6 +29,64 @@ jobs:
         with:
           node-version: 22
 
+      - name: Apply queue notification quiet hours once
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('pokemon-drop-radar/queue-watch.mjs')
+          s=p.read_text()
+          if 'function quietNow()' not in s:
+              s=s.replace('const REMIND_MS=15*60_000;','const REMIND_MS=30*60_000;',1)
+              marker="const sleep=ms=>new Promise(r=>setTimeout(r,ms));\n"
+              insert="const sleep=ms=>new Promise(r=>setTimeout(r,ms));\nfunction quietNow(){\n  const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(new Date()));\n  return hour>=23||hour<8;\n}\n"
+              if marker not in s: raise SystemExit('sleep marker missing')
+              s=s.replace(marker,insert,1)
+              old="""    if(found.active){
+      const reminder=lastAlertAt&&Date.now()-lastAlertAt>=REMIND_MS;
+      if(!alertPr){
+        const pushed=await pushQueue(found,false);
+        console.log('QUEUE ACTIVE — ntfy',pushed?'sent':'topic unavailable/send failed');
+        try{alertPr=await createAlertPr(found);console.log('GitHub-native backup PR created',alertPr.number)}catch(e){console.log('GitHub-native backup PR unavailable',String(e?.message||e))}
+        lastAlertAt=Date.now();
+      }else if(reminder){
+        const pushed=await pushQueue(found,true);
+        await remindAlertPr(alertPr,found);
+        console.log('QUEUE ACTIVE reminder — ntfy',pushed?'sent':'topic unavailable/send failed');
+        lastAlertAt=Date.now();
+      }
+"""
+              new="""    if(found.active){
+      const quiet=quietNow();
+      const reminder=lastAlertAt&&Date.now()-lastAlertAt>=REMIND_MS;
+      if(!alertPr){
+        if(quiet){
+          console.log('QUEUE ACTIVE — alert deferred during 23:00-08:00 America/New_York quiet hours');
+        }else{
+          const pushed=await pushQueue(found,false);
+          console.log('QUEUE ACTIVE — ntfy',pushed?'sent':'topic unavailable/send failed');
+          try{alertPr=await createAlertPr(found);console.log('GitHub-native backup PR created',alertPr.number)}catch(e){console.log('GitHub-native backup PR unavailable',String(e?.message||e))}
+          lastAlertAt=Date.now();
+        }
+      }else if(reminder&&!quiet){
+        const pushed=await pushQueue(found,true);
+        await remindAlertPr(alertPr,found);
+        console.log('QUEUE ACTIVE reminder — ntfy',pushed?'sent':'topic unavailable/send failed');
+        lastAlertAt=Date.now();
+      }
+"""
+              if old not in s: raise SystemExit('alert block missing')
+              p.write_text(s.replace(old,new,1))
+          PY
+          if ! git diff --quiet -- pokemon-drop-radar/queue-watch.mjs; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add pokemon-drop-radar/queue-watch.mjs
+            git commit -m "Respect overnight quiet hours for queue alerts"
+            git push
+          else
+            echo "Queue quiet-hours patch already present"
+          fi
+
       - name: Remove one-time notification test branch
         env:
           GITHUB_TOKEN: ${{ github.token }}
