@@ -1,0 +1,86 @@
+name: Patch fast Best Buy parser
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-fast-bestbuy-parser.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Port proven SKU-specific Best Buy parser
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('pokemon-drop-radar/fast-watch.mjs')
+          s=p.read_text()
+          a=s.index('function bestBuyContext(html,sku){')
+          b=s.index('function bestBuyPrice(ctx){',a)
+          new=r'''function bestBuySkuState(html,sku){
+  const patterns=[`"skuId":"${sku}"`,`\\"skuId\\":\\"${sku}\\"`];
+  const positions=[];
+  for(const needle of patterns){
+    let from=0;
+    while(true){const i=html.indexOf(needle,from);if(i<0)break;positions.push(i);from=i+needle.length;}
+  }
+  positions.sort((a,b)=>a-b);
+  for(const idx of positions){
+    const ctx=normalizeEscaped(html.slice(Math.max(0,idx-500),Math.min(html.length,idx+9000)));
+    const skuMark=`"skuId":"${sku}"`;
+    const mark=ctx.indexOf(skuMark);
+    const local=ctx.slice(Math.max(0,mark),Math.min(ctx.length,mark>=0?mark+7500:7500));
+    const block=local.match(/"buttonStates"\s*:\s*\[([\s\S]{0,2600}?)\]/i)?.[1]||local;
+    const state=block.match(/"buttonState"\s*:\s*"([A-Z0-9_-]+)"/i)?.[1];
+    const text=block.match(/"displayText"\s*:\s*"([^"\n]{1,120})"/i)?.[1]||null;
+    if(state)return{state:state.toUpperCase(),text,ctx:local};
+  }
+  return null;
+}
+function bestBuyStatus(found,product){
+  if(!found)return null;
+  const raw=found.state;
+  if(raw==='COMING_SOON')return'coming_soon';
+  if(['SOLD_OUT','OUT_OF_STOCK','UNAVAILABLE','NOT_AVAILABLE','DISABLED'].includes(raw))return'out_of_stock';
+  if(['PREORDER','PRE_ORDER','PREORDER_AVAILABLE'].includes(raw))return'preorder_open';
+  if(raw.includes('RESERV'))return'reservation_open';
+  if(raw.includes('QUEUE')||raw.includes('LINE'))return'queue_open';
+  if(raw.includes('DRAW'))return'drawing_open';
+  if(raw.includes('INVITE'))return'invite_open';
+  if(['ADD_TO_CART','BUY_NOW','AVAILABLE'].includes(raw)){
+    if(product.bestBuyAccessMode==='invite')return'invite_open';
+    if(product.bestBuyAccessMode==='reservation')return'reservation_open';
+    return'add_to_cart';
+  }
+  return null;
+}
+'''
+          s=s[:a]+new+s[b:]
+          a=s.index('async function checkBestBuy(product){')
+          b=s.index('\n\nfunction scopeAround(html,sku){',a)
+          new2=r'''async function checkBestBuy(product){
+  const page=await getPage(product.url);
+  if(blocked(page.text,page.status))return{health:'blocked',http:page.status};
+  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`};
+  const found=bestBuySkuState(page.text,product.sku);
+  const status=bestBuyStatus(found,product)||bestBuySafeFallback(page.text);
+  const price=bestBuyPrice(found?.ctx||'');
+  const special=ACCESS.has(status);
+  const under=price!=null&&price<=Number(product.maxPrice);
+  return{health:'ok',status,price,isFirstParty:true,actionable:ACTIONABLE.has(status)&&(special||under),http:page.status};
+}'''
+          s=s[:a]+new2+s[b:]
+          p.write_text(s)
+          PY
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs
+          git commit -m "Use proven Best Buy SKU parser in fast watcher"
+          git push
