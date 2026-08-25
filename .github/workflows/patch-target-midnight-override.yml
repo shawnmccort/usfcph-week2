@@ -12,6 +12,9 @@ permissions:
 jobs:
   patch:
     runs-on: ubuntu-latest
+    env:
+      OLD_B64: "ZnVuY3Rpb24gcXVpZXROb3coKXsKICBjb25zdCBob3VyPU51bWJlcihuZXcgSW50bC5EYXRlVGltZUZvcm1hdCgnZW4tVVMnLHt0aW1lWm9uZTonQW1lcmljYS9OZXdfWW9yaycsaG91cjonMi1kaWdpdCcsaG91ckN5Y2xlOidoMjMnfSkuZm9ybWF0KG5ldyBEYXRlKCkpKTsKICByZXR1cm4gaG91cj49MCYmaG91cjw4Owp9Cg=="
+      NEW_B64: "ZnVuY3Rpb24gZWFzdGVybkNsb2NrKG5vdz1uZXcgRGF0ZSgpKXsKICBjb25zdCBwYXJ0cz1PYmplY3QuZnJvbUVudHJpZXMobmV3IEludGwuRGF0ZVRpbWVGb3JtYXQoJ2VuLVVTJyx7dGltZVpvbmU6J0FtZXJpY2EvTmV3X1lvcmsnLHllYXI6J251bWVyaWMnLG1vbnRoOicyLWRpZ2l0JyxkYXk6JzItZGlnaXQnLGhvdXI6JzItZGlnaXQnLGhvdXJDeWNsZTonaDIzJ30pLmZvcm1hdFRvUGFydHMobm93KS5maWx0ZXIoeD0+eC50eXBlIT09J2xpdGVyYWwnKS5tYXAoeD0+W3gudHlwZSx4LnZhbHVlXSkpOwogIHJldHVybiB7eWVhcjpOdW1iZXIocGFydHMueWVhciksbW9udGg6TnVtYmVyKHBhcnRzLm1vbnRoKSxkYXk6TnVtYmVyKHBhcnRzLmRheSksaG91cjpOdW1iZXIocGFydHMuaG91cil9Owp9CmZ1bmN0aW9uIHRhcmdldFRvbmlnaHRPdmVycmlkZShwcm9kdWN0LG5vdz1uZXcgRGF0ZSgpKXsKICBjb25zdCB0PWVhc3Rlcm5DbG9jayhub3cpOwogIHJldHVybiBwcm9kdWN0Py5yZXRhaWxlcj09PSdUYXJnZXQnJiZ0LnllYXI9PT0yMDI2JiZ0Lm1vbnRoPT09OCYmdC5kYXk9PT0yNSYmdC5ob3VyPj0wJiZ0LmhvdXI8MzsKfQpmdW5jdGlvbiBxdWlldE5vdyhwcm9kdWN0KXsKICBjb25zdCB0PWVhc3Rlcm5DbG9jaygpOwogIGlmKHRhcmdldFRvbmlnaHRPdmVycmlkZShwcm9kdWN0KSlyZXR1cm4gZmFsc2U7CiAgcmV0dXJuIHQuaG91cj49MCYmdC5ob3VyPDg7Cn0K"
     steps:
       - uses: actions/checkout@v4
       - name: Enable Target alerts midnight to 3am Eastern tonight
@@ -19,27 +22,11 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import os, base64
           p=Path('pokemon-drop-radar/fast-watch.mjs')
           s=p.read_text()
-          old="""function quietNow(){
-  const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(new Date()));
-  return hour>=0&&hour<8;
-}
-"""
-          new="""function easternClock(now=new Date()){
-  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(now).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
-  return {year:Number(parts.year),month:Number(parts.month),day:Number(parts.day),hour:Number(parts.hour)};
-}
-function targetTonightOverride(product,now=new Date()){
-  const t=easternClock(now);
-  return product?.retailer==='Target'&&t.year===2026&&t.month===8&&t.day===25&&t.hour>=0&&t.hour<3;
-}
-function quietNow(product){
-  const t=easternClock();
-  if(targetTonightOverride(product))return false;
-  return t.hour>=0&&t.hour<8;
-}
-"""
+          old=base64.b64decode(os.environ['OLD_B64']).decode()
+          new=base64.b64decode(os.environ['NEW_B64']).decode()
           if old not in s:
               raise SystemExit('quietNow marker not found')
           s=s.replace(old,new,1)
