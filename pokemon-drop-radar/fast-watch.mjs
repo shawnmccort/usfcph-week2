@@ -17,12 +17,21 @@ const token=process.env.GITHUB_TOKEN;
 const sha=process.env.GITHUB_SHA;
 const ntfyTopic=process.env.NTFY_TOPIC||'';
 const NTFY_SERVER=(process.env.NTFY_SERVER||'https://ntfy.sh').replace(/\/$/,'');
-function quietNow(){
-  const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(new Date()));
-  return hour>=0&&hour<8;
+function easternClock(now=new Date()){
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(now).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+  return {year:Number(parts.year),month:Number(parts.month),day:Number(parts.day),hour:Number(parts.hour)};
+}
+function targetTonightOverride(product,now=new Date()){
+  const t=easternClock(now);
+  return product?.retailer==='Target'&&t.year===2026&&t.month===8&&t.day===25&&t.hour>=0&&t.hour<3;
+}
+function quietNow(product){
+  const t=easternClock();
+  if(targetTonightOverride(product))return false;
+  return t.hour>=0&&t.hour<8;
 }
 async function sendNtfy(product,row){
-  if(!ntfyTopic||quietNow())return false;
+  if(!ntfyTopic||quietNow(product))return false;
   const body={
     topic:ntfyTopic,
     title:`🚨 ${product.retailer}: ${product.name}`,
@@ -32,7 +41,7 @@ async function sendNtfy(product,row){
       product.sku?`SKU ${product.sku}`:'',
       'Verified by the seconds-level Pokemon Drop Radar'
     ].filter(Boolean).join('\n'),
-    priority:4,
+    priority:targetTonightOverride(product)?5:4,
     tags:['rotating_light','card_index_dividers'],
     click:row.url||product.url
   };
@@ -331,7 +340,7 @@ while(Date.now()<end){
   // deferred and sent after 08:00 Eastern only if the listing is still live.
   if(next.actionable===true&&ntfyTopic){
     if(next.ntfySentForLive!==true){
-      if(quietNow()){
+      if(quietNow(product)){
         next.ntfyPending=true;
       }else{
         const sentNow=await sendNtfy(product,next);
