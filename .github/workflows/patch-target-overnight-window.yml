@@ -1,0 +1,26 @@
+name: Patch Target overnight window
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-target-overnight-window.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove 3 AM Target cutoff
+        shell: bash
+        run: |
+          python -c "from pathlib import Path; p=Path('pokemon-drop-radar/fast-watch.mjs'); s=p.read_text(); old=\"t.day===25&&t.hour>=0&&t.hour<3\"; new=\"t.day===25&&t.hour>=0&&t.hour<8\"; assert old in s, 'override marker missing'; p.write_text(s.replace(old,new,1))"
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs
+          git commit -m "Keep Target alerts active through overnight window"
+          git push
