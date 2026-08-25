@@ -26,11 +26,14 @@ jobs:
           import os, base64
           p=Path('pokemon-drop-radar/fast-watch.mjs')
           s=p.read_text()
-          marker="const NTFY_SERVER=(process.env.NTFY_SERVER||'https://ntfy.sh').replace(/\\\/$/,'');\n"
-          insert="const SUPABASE_URL='https://avtjrtqzwjiefpowboqo.supabase.co';\nconst SUPABASE_KEY='sb_publishable_yPWA8Ghh-UpxNGt-wSVkvw_3sOkdFTr';\n"
           if "const SUPABASE_URL=" not in s:
-              if marker not in s: raise SystemExit('supabase constant marker missing')
-              s=s.replace(marker,marker+insert,1)
+              needle="const NTFY_SERVER="
+              i=s.find(needle)
+              if i<0: raise SystemExit('NTFY server line missing')
+              e=s.find('\n',i)
+              if e<0: raise SystemExit('NTFY server line ending missing')
+              insert="\nconst SUPABASE_URL='https://avtjrtqzwjiefpowboqo.supabase.co';\nconst SUPABASE_KEY='sb_publishable_yPWA8Ghh-UpxNGt-wSVkvw_3sOkdFTr';"
+              s=s[:e]+insert+s[e:]
           fn=base64.b64decode(os.environ['FN_B64']).decode()
           if 'async function publishRealtimeState' not in s:
               m="if(!token)throw new Error('GITHUB_TOKEN missing');\n"
