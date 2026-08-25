@@ -233,19 +233,21 @@ async function syncAlertPr(live,newItems=[]){
 
 function applyObservation(prev,obs,product){
   const now=new Date().toISOString();
+  // Never publish an actionable-looking status unless every verifier gate passed.
+  const safeStatus=obs.actionable===true||!ACTIONABLE.has(obs.status)?obs.status:'unknown';
   if(!prev){
     if(obs.health!=='ok')return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:'unknown',price:null,actionable:false,health:obs.health,lastProbeAt:now,lastError:obs.error||null,http:obs.http??null,clearCandidateCount:0},transition:null};
-    return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:obs.status,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};
+    return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};
   }
   if(obs.health!=='ok')return{next:{...prev,health:obs.health,lastProbeAt:now,lastError:obs.error||null,http:obs.http??null},transition:null};
   const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null};
   if(prev.actionable===true&&obs.actionable!==true){
-    const same=prev.clearCandidateStatus===obs.status;const count=same?Number(prev.clearCandidateCount||0)+1:1;
-    if(count<2)return{next:{...base,clearCandidateStatus:obs.status,clearCandidatePrice:obs.price??null,clearCandidateCount:count},transition:null};
-    return{next:{...base,status:obs.status,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};
+    const same=prev.clearCandidateStatus===safeStatus;const count=same?Number(prev.clearCandidateCount||0)+1:1;
+    if(count<2)return{next:{...base,clearCandidateStatus:safeStatus,clearCandidatePrice:obs.price??null,clearCandidateCount:count},transition:null};
+    return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};
   }
   const became=prev.actionable!==true&&obs.actionable===true;
-  return{next:{...base,status:obs.status,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};
+  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};
 }
 
 async function preflight(){
