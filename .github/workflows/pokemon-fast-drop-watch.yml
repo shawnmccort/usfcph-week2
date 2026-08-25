@@ -39,6 +39,7 @@ jobs:
       - name: Watch high-demand Pokemon products continuously
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node pokemon-drop-radar/fast-watch.mjs
 
 # proven Best Buy SKU parser restart 2026-08-24
