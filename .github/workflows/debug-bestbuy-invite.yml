@@ -1,0 +1,31 @@
+name: Debug Best Buy invite markers
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/debug-bestbuy-invite.yml"
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch public Pitch Black page and report marker counts
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request,re
+          url='https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-box-36-packs/JJG2TL8C7R/sku/6678362'
+          req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; PokemonDropRadar/1.0)','Accept-Language':'en-US,en;q=0.9'})
+          html=urllib.request.urlopen(req,timeout=15).read().decode('utf-8','ignore')
+          print('bytes',len(html))
+          pats=['exclusive sales event','request an invite','requested an invite','cancel your invite request','invite','reservation','buttonState','skuId','6678362']
+          low=html.lower()
+          for p in pats:
+              print(p, low.count(p.lower()))
+          for needle in ['exclusive sales event','request an invite','requested an invite','cancel your invite request','6678362']:
+              i=low.find(needle.lower())
+              if i>=0:
+                  snippet=re.sub(r'\s+',' ',html[max(0,i-500):i+1500])
+                  print('SNIP',needle,repr(snippet[:1800]))
+          PY
