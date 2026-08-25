@@ -40,3 +40,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node pokemon-drop-radar/fast-watch.mjs
+
+# fail-closed availability restart 2026-08-24
