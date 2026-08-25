@@ -42,4 +42,4 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
         run: node pokemon-drop-radar/fast-watch.mjs
 
-# proven Best Buy SKU parser restart 2026-08-24
+# secret-enabled restart 2026-08-24 22:17 ET
