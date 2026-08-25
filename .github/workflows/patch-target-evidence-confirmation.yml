@@ -12,93 +12,34 @@ permissions:
 jobs:
   patch:
     runs-on: ubuntu-latest
+    env:
+      OLD_B64: "YXN5bmMgZnVuY3Rpb24gY2hlY2tUYXJnZXQocHJvZHVjdCl7CiAgY29uc3QgcGFnZT1hd2FpdCBnZXRQYWdlKHByb2R1Y3QudXJsKTsKICBpZihibG9ja2VkKHBhZ2UudGV4dCxwYWdlLnN0YXR1cykpcmV0dXJue2hlYWx0aDonYmxvY2tlZCcsaHR0cDpwYWdlLnN0YXR1c307CiAgaWYoIXBhZ2Uub2spcmV0dXJue2hlYWx0aDonZXJyb3InLGh0dHA6cGFnZS5zdGF0dXMsZXJyb3I6cGFnZS5lcnJvcnx8YEhUVFAgJHtwYWdlLnN0YXR1c31gfTsKICBjb25zdCBzY29wZT1zY29wZUFyb3VuZChwYWdlLnRleHQscHJvZHVjdC5za3UpO2NvbnN0IHByaW1hcnk9dGFyZ2V0UHJpbWFyeShwYWdlLnRleHQscHJvZHVjdCk7Y29uc3Qgc3RydWN0dXJlZD10YXJnZXRTdHJ1Y3R1cmVkKHNjb3BlLHByb2R1Y3Quc2t1KTtjb25zdCBzZWxsZXI9dGFyZ2V0U2VsbGVyKHNjb3BlKTsKICBjb25zdCBzdGF0dXM9cHJpbWFyeS5zdGF0dXN8fHN0cnVjdHVyZWQuc3RhdHVzfHwndW5rbm93bic7Y29uc3QgcHJpY2U9cHJpbWFyeS5wcmljZT8/c3RydWN0dXJlZC5wcmljZT8/bnVsbDsKICBjb25zdCB1bmRlcj1wcmljZSE9bnVsbCYmcHJpY2U8PU51bWJlcihwcm9kdWN0Lm1heFByaWNlKTsKICByZXR1cm57aGVhbHRoOidvaycsc3RhdHVzLHByaWNlLHNlbGxlcjpzZWxsZXIuc2VsbGVyLGlzRmlyc3RQYXJ0eTpzZWxsZXIuaXNGaXJzdFBhcnR5LGFjdGlvbmFibGU6QUNUSU9OQUJMRS5oYXMoc3RhdHVzKSYmc2VsbGVyLmlzRmlyc3RQYXJ0eT09PXRydWUmJnVuZGVyLGh0dHA6cGFnZS5zdGF0dXN9Owp9CmFzeW5jIGZ1bmN0aW9uIGNoZWNrUHJvZHVjdChwcm9kdWN0KXtyZXR1cm4gcHJvZHVjdC5yZXRhaWxlcj09PSdCZXN0IEJ1eSc/Y2hlY2tCZXN0QnV5KHByb2R1Y3QpOnByb2R1Y3QucmV0YWlsZXI9PT0nVGFyZ2V0Jz9jaGVja1RhcmdldChwcm9kdWN0KTp7aGVhbHRoOidlcnJvcicsZXJyb3I6J3Vuc3VwcG9ydGVkIHJldGFpbGVyJ307fQo="
+      NEW_B64: "YXN5bmMgZnVuY3Rpb24gY2hlY2tUYXJnZXQocHJvZHVjdCl7CiAgY29uc3QgY2hlY2tlZEF0PW5ldyBEYXRlKCkudG9JU09TdHJpbmcoKTsKICBjb25zdCBwYWdlPWF3YWl0IGdldFBhZ2UocHJvZHVjdC51cmwpOwogIGlmKGJsb2NrZWQocGFnZS50ZXh0LHBhZ2Uuc3RhdHVzKSlyZXR1cm57aGVhbHRoOidibG9ja2VkJyxodHRwOnBhZ2Uuc3RhdHVzLGV2aWRlbmNlOntjaGVja2VkQXQsaHR0cDpwYWdlLnN0YXR1cyxoZWFsdGg6J2Jsb2NrZWQnfX07CiAgaWYoIXBhZ2Uub2spcmV0dXJue2hlYWx0aDonZXJyb3InLGh0dHA6cGFnZS5zdGF0dXMsZXJyb3I6cGFnZS5lcnJvcnx8YEhUVFAgJHtwYWdlLnN0YXR1c31gLGV2aWRlbmNlOntjaGVja2VkQXQsaHR0cDpwYWdlLnN0YXR1cyxoZWFsdGg6J2Vycm9yJ319OwogIGNvbnN0IHNjb3BlPXNjb3BlQXJvdW5kKHBhZ2UudGV4dCxwcm9kdWN0LnNrdSk7Y29uc3QgcHJpbWFyeT10YXJnZXRQcmltYXJ5KHBhZ2UudGV4dCxwcm9kdWN0KTtjb25zdCBzdHJ1Y3R1cmVkPXRhcmdldFN0cnVjdHVyZWQoc2NvcGUscHJvZHVjdC5za3UpO2NvbnN0IHNlbGxlcj10YXJnZXRTZWxsZXIoc2NvcGUpOwogIGNvbnN0IGRpc2FncmVlbWVudD1BQ1RJT05BQkxFLmhhcyhwcmltYXJ5LnN0YXR1cykmJnN0cnVjdHVyZWQuc3RhdHVzPT09J291dF9vZl9zdG9jayc7CiAgY29uc3Qgc3RhdHVzPWRpc2FncmVlbWVudD8ndW5rbm93bic6KHByaW1hcnkuc3RhdHVzfHxzdHJ1Y3R1cmVkLnN0YXR1c3x8J3Vua25vd24nKTtjb25zdCBwcmljZT1wcmltYXJ5LnByaWNlPz9zdHJ1Y3R1cmVkLnByaWNlPz9udWxsOwogIGNvbnN0IHVuZGVyPXByaWNlIT1udWxsJiZwcmljZTw9TnVtYmVyKHByb2R1Y3QubWF4UHJpY2UpOwogIGNvbnN0IGFjdGlvbmFibGU9QUNUSU9OQUJMRS5oYXMoc3RhdHVzKSYmc2VsbGVyLmlzRmlyc3RQYXJ0eT09PXRydWUmJnVuZGVyOwogIGNvbnN0IGV2aWRlbmNlPXsKICAgIGNoZWNrZWRBdCxodHRwOnBhZ2Uuc3RhdHVzLGZpbmFsVXJsOnBhZ2UudXJsfHxwcm9kdWN0LnVybCxib2R5Qnl0ZXM6QnVmZmVyLmJ5dGVMZW5ndGgocGFnZS50ZXh0fHwnJyksCiAgICBib2R5U2hhMjU2OmNyZWF0ZUhhc2goJ3NoYTI1NicpLnVwZGF0ZShwYWdlLnRleHR8fCcnKS5kaWdlc3QoJ2hleCcpLAogICAgcHJpbWFyeVN0YXR1czpwcmltYXJ5LnN0YXR1c3x8bnVsbCxzdHJ1Y3R1cmVkU3RhdHVzOnN0cnVjdHVyZWQuc3RhdHVzfHxudWxsLAogICAgcHJpbWFyeVByaWNlOnByaW1hcnkucHJpY2U/P251bGwsc3RydWN0dXJlZFByaWNlOnN0cnVjdHVyZWQucHJpY2U/P251bGwsCiAgICBzZWxsZXI6c2VsbGVyLnNlbGxlcixpc0ZpcnN0UGFydHk6c2VsbGVyLmlzRmlyc3RQYXJ0eSxkaXNhZ3JlZW1lbnQsYWN0aW9uYWJsZQogIH07CiAgcmV0dXJue2hlYWx0aDonb2snLHN0YXR1cyxwcmljZSxzZWxsZXI6c2VsbGVyLnNlbGxlcixpc0ZpcnN0UGFydHk6c2VsbGVyLmlzRmlyc3RQYXJ0eSxhY3Rpb25hYmxlLGh0dHA6cGFnZS5zdGF0dXMsZXZpZGVuY2V9Owp9CmFzeW5jIGZ1bmN0aW9uIGNoZWNrVGFyZ2V0Q29uZmlybWVkKHByb2R1Y3QpewogIGNvbnN0IGZpcnN0PWF3YWl0IGNoZWNrVGFyZ2V0KHByb2R1Y3QpOwogIGlmKGZpcnN0LmFjdGlvbmFibGUhPT10cnVlKXJldHVybnsuLi5maXJzdCxldmlkZW5jZVZlcmRpY3Q6Zmlyc3QuZXZpZGVuY2U/LmRpc2FncmVlbWVudD8ncGFyc2VyX2Rpc2FncmVlbWVudCc6J25vdF9hY3Rpb25hYmxlJyxldmlkZW5jZVByb2JlczpbZmlyc3QuZXZpZGVuY2VdLmZpbHRlcihCb29sZWFuKX07CiAgYXdhaXQgc2xlZXAoMTUwMCk7CiAgY29uc3Qgc2Vjb25kPWF3YWl0IGNoZWNrVGFyZ2V0KHByb2R1Y3QpOwogIGNvbnN0IHByb2Jlcz1bZmlyc3QuZXZpZGVuY2Usc2Vjb25kLmV2aWRlbmNlXS5maWx0ZXIoQm9vbGVhbik7CiAgaWYoc2Vjb25kLmFjdGlvbmFibGUhPT10cnVlKXsKICAgIHJldHVybnsuLi5zZWNvbmQsc3RhdHVzOid1bmtub3duJyxhY3Rpb25hYmxlOmZhbHNlLGV2aWRlbmNlVmVyZGljdDonZmFpbGVkXzJfb2ZfMl9jb25maXJtYXRpb24nLGV2aWRlbmNlUHJvYmVzOnByb2Jlc307CiAgfQogIHJldHVybnsuLi5zZWNvbmQsZXZpZGVuY2VWZXJkaWN0Oidjb25maXJtZWRfMl9vZl8yJyxldmlkZW5jZVByb2Jlczpwcm9iZXN9Owp9CmFzeW5jIGZ1bmN0aW9uIGNoZWNrUHJvZHVjdChwcm9kdWN0KXtyZXR1cm4gcHJvZHVjdC5yZXRhaWxlcj09PSdCZXN0IEJ1eSc/Y2hlY2tCZXN0QnV5KHByb2R1Y3QpOnByb2R1Y3QucmV0YWlsZXI9PT0nVGFyZ2V0Jz9jaGVja1RhcmdldENvbmZpcm1lZChwcm9kdWN0KTp7aGVhbHRoOidlcnJvcicsZXJyb3I6J3Vuc3VwcG9ydGVkIHJldGFpbGVyJ307fQo="
     steps:
       - uses: actions/checkout@v4
-      - name: Add 2-of-2 Target confirmation and evidence
+      - name: Apply Target evidence confirmation
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
+          import os,base64
           p=Path('pokemon-drop-radar/fast-watch.mjs')
           s=p.read_text()
-
           if "node:crypto" not in s:
-              s=s.replace("import fs from 'node:fs/promises';\n", "import fs from 'node:fs/promises';\nimport {createHash} from 'node:crypto';\n", 1)
-
-          if "const EVIDENCE_BRANCH=" not in s:
-              s=s.replace("const STATE_PATH='pokemon-drop-radar/fast-state.json';\n", "const STATE_PATH='pokemon-drop-radar/fast-state.json';\nconst EVIDENCE_BRANCH='pokemon-fast-evidence';\n", 1)
-
-          old="""async function checkTarget(product){
-  const page=await getPage(product.url);
-  if(blocked(page.text,page.status))return{health:'blocked',http:page.status};
-  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`};
-  const scope=scopeAround(page.text,product.sku);const primary=targetPrimary(page.text,product);const structured=targetStructured(scope,product.sku);const seller=targetSeller(scope);
-  const status=primary.status||structured.status||'unknown';const price=primary.price??structured.price??null;
-  const under=price!=null&&price<=Number(product.maxPrice);
-  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable:ACTIONABLE.has(status)&&seller.isFirstParty===true&&under,http:page.status};
-}
-async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTarget(product):{health:'error',error:'unsupported retailer'};}
-"""
-          new="""async function checkTarget(product){
-  const checkedAt=new Date().toISOString();
-  const page=await getPage(product.url);
-  if(blocked(page.text,page.status))return{health:'blocked',http:page.status,evidence:{checkedAt,http:page.status,health:'blocked'}};
-  if(!page.ok)return{health:'error',http:page.status,error:page.error||`HTTP ${page.status}`,evidence:{checkedAt,http:page.status,health:'error'}};
-  const scope=scopeAround(page.text,product.sku);const primary=targetPrimary(page.text,product);const structured=targetStructured(scope,product.sku);const seller=targetSeller(scope);
-  // Explicit disagreement fails closed. A visible Add to Cart should not beat structured OutOfStock evidence.
-  const disagreement=ACTIONABLE.has(primary.status)&&structured.status==='out_of_stock';
-  const status=disagreement?'unknown':(primary.status||structured.status||'unknown');const price=primary.price??structured.price??null;
-  const under=price!=null&&price<=Number(product.maxPrice);
-  const actionable=ACTIONABLE.has(status)&&seller.isFirstParty===true&&under;
-  const evidence={
-    checkedAt,http:page.status,finalUrl:page.url||product.url,bodyBytes:Buffer.byteLength(page.text||''),
-    bodySha256:createHash('sha256').update(page.text||'').digest('hex'),
-    primaryStatus:primary.status||null,structuredStatus:structured.status||null,
-    primaryPrice:primary.price??null,structuredPrice:structured.price??null,
-    seller:seller.seller,isFirstParty:seller.isFirstParty,disagreement,actionable
-  };
-  return{health:'ok',status,price,seller:seller.seller,isFirstParty:seller.isFirstParty,actionable,http:page.status,evidence};
-}
-async function checkTargetConfirmed(product){
-  const first=await checkTarget(product);
-  if(first.actionable!==true)return{...first,evidenceVerdict:first.evidence?.disagreement?'parser_disagreement':'not_actionable',evidenceProbes:[first.evidence].filter(Boolean)};
-  await sleep(1500);
-  const second=await checkTarget(product);
-  const probes=[first.evidence,second.evidence].filter(Boolean);
-  if(second.actionable!==true){
-    return{...second,status:'unknown',actionable:false,evidenceVerdict:'failed_2_of_2_confirmation',evidenceProbes:probes};
-  }
-  return{...second,evidenceVerdict:'confirmed_2_of_2',evidenceProbes:probes};
-}
-async function checkProduct(product){return product.retailer==='Best Buy'?checkBestBuy(product):product.retailer==='Target'?checkTargetConfirmed(product):{health:'error',error:'unsupported retailer'};}
-"""
-          if old not in s:
+              s=s.replace("import fs from 'node:fs/promises';\n", "import fs from 'node:fs/promises';\nimport {createHash} from 'node:crypto';\n",1)
+          old=base64.b64decode(os.environ['OLD_B64']).decode()
+          new=base64.b64decode(os.environ['NEW_B64']).decode()
+          if old in s:
+              s=s.replace(old,new,1)
+          elif 'checkTargetConfirmed' not in s:
               raise SystemExit('Target checker marker not found')
-          s=s.replace(old,new,1)
-
-          # Keep evidence with state so the latest live and clear probes remain inspectable.
-          s=s.replace("const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null};",
-                      "const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null};",1)
-          s=s.replace("return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};",
-                      "return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null},transition:null};",1)
-
-          # On a newly confirmed Target hit, persist the live evidence; on clear, preserve clear evidence too.
-          old_bec="const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};"
-          new_bec="const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,...(became?{lastLiveEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}}:{})},transition:became?'new':null};"
-          if old_bec not in s: raise SystemExit('became marker missing')
-          s=s.replace(old_bec,new_bec,1)
-
-          old_clear="return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};"
-          new_clear="return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,lastClearEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}},transition:'cleared'};"
-          if old_clear not in s: raise SystemExit('clear marker missing')
-          s=s.replace(old_clear,new_clear,1)
-
-          # Put confirmation strength in the phone notification.
+          s=s.replace("const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null};","const base={...prev,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null};",1)
+          s=s.replace("return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0},transition:null};","return{next:{name:product.name,retailer:product.retailer,url:product.url,maxPrice:product.maxPrice,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,health:'ok',lastProbeAt:now,lastVerifiedAt:now,lastError:null,http:obs.http??null,clearCandidateCount:0,lastEvidenceVerdict:obs.evidenceVerdict||null,lastEvidenceProbes:obs.evidenceProbes||null},transition:null};",1)
+          s=s.replace("return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:'cleared'};","return{next:{...base,status:safeStatus,price:obs.price??null,actionable:false,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,lastClearEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}},transition:'cleared'};",1)
+          s=s.replace("const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0},transition:became?'new':null};","const became=prev.actionable!==true&&obs.actionable===true;\n  return{next:{...base,status:safeStatus,price:obs.price??null,actionable:obs.actionable===true,clearCandidateStatus:null,clearCandidatePrice:null,clearCandidateCount:0,...(became?{lastLiveEvidence:{at:now,verdict:obs.evidenceVerdict||null,probes:obs.evidenceProbes||null}}:{})},transition:became?'new':null};",1)
           needle="      'Verified by the seconds-level Pokemon Drop Radar'\n"
-          repl="      row.lastEvidenceVerdict==='confirmed_2_of_2'?'CONFIRMED 2/2 independent reads':'Verified by the seconds-level Pokemon Drop Radar',\n      'Verified by the seconds-level Pokemon Drop Radar'\n"
           if needle in s and "CONFIRMED 2/2 independent reads" not in s:
-              s=s.replace(needle,repl,1)
-
+              s=s.replace(needle,"      row.lastEvidenceVerdict==='confirmed_2_of_2'?'CONFIRMED 2/2 independent reads':'Verified by the seconds-level Pokemon Drop Radar',\n      'Verified by the seconds-level Pokemon Drop Radar'\n",1)
           p.write_text(s)
           PY
           node --check pokemon-drop-radar/fast-watch.mjs
