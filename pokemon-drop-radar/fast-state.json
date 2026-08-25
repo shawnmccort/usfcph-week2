@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-25T03:41:59.343Z",
+  "updatedAt": "2026-08-25T03:42:35.662Z",
   "products": {
     "pokemon-30th-celebration-binder-collection": {
       "name": "30th Celebration Binder Collection",
@@ -11,13 +11,15 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-25T03:41:46.232Z",
-      "lastVerifiedAt": "2026-08-25T03:41:46.232Z",
+      "lastProbeAt": "2026-08-25T03:42:35.662Z",
+      "lastVerifiedAt": "2026-08-25T03:42:35.662Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
-      "clearCandidatePrice": null
+      "clearCandidatePrice": null,
+      "lastEvidenceVerdict": null,
+      "lastEvidenceProbes": null
     },
     "pokemon-30th-celebration-etb": {
       "name": "30th Celebration Elite Trainer Box",
