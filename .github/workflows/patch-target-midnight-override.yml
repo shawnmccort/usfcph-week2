@@ -1,0 +1,56 @@
+name: Patch Target midnight override
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-target-midnight-override.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable Target alerts midnight to 3am Eastern tonight
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('pokemon-drop-radar/fast-watch.mjs')
+          s=p.read_text()
+          old="""function quietNow(){
+  const hour=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',hourCycle:'h23'}).format(new Date()));
+  return hour>=0&&hour<8;
+}
+"""
+          new="""function easternClock(now=new Date()){
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(now).filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));
+  return {year:Number(parts.year),month:Number(parts.month),day:Number(parts.day),hour:Number(parts.hour)};
+}
+function targetTonightOverride(product,now=new Date()){
+  const t=easternClock(now);
+  return product?.retailer==='Target'&&t.year===2026&&t.month===8&&t.day===25&&t.hour>=0&&t.hour<3;
+}
+function quietNow(product){
+  const t=easternClock();
+  if(targetTonightOverride(product))return false;
+  return t.hour>=0&&t.hour<8;
+}
+"""
+          if old not in s:
+              raise SystemExit('quietNow marker not found')
+          s=s.replace(old,new,1)
+          s=s.replace("if(!ntfyTopic||quietNow())return false;","if(!ntfyTopic||quietNow(product))return false;",1)
+          s=s.replace("    priority:4,","    priority:targetTonightOverride(product)?5:4,",1)
+          s=s.replace("      if(quietNow()){","      if(quietNow(product)){",1)
+          p.write_text(s)
+          PY
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs
+          git commit -m "Enable Target midnight drop alerts tonight"
+          git push
