@@ -1,0 +1,69 @@
+name: Patch fast Supabase realtime transport
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/patch-fast-supabase-realtime.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish fast state to Supabase realtime
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('pokemon-drop-radar/fast-watch.mjs')
+          s=p.read_text()
+          marker="const NTFY_SERVER=(process.env.NTFY_SERVER||'https://ntfy.sh').replace(/\\\/$/,'');\n"
+          insert="const SUPABASE_URL='https://avtjrtqzwjiefpowboqo.supabase.co';\nconst SUPABASE_KEY='sb_publishable_yPWA8Ghh-UpxNGt-wSVkvw_3sOkdFTr';\n"
+          if "const SUPABASE_URL=" not in s:
+              if marker not in s: raise SystemExit('supabase constant marker missing')
+              s=s.replace(marker,marker+insert,1)
+
+          fn_marker="if(!token)throw new Error('GITHUB_TOKEN missing');\n"
+          fn="""async function publishRealtimeState(state){
+  if(!ntfyTopic)return;
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),5000);
+  try{
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/ingest_pokemon_fast_state`,{
+      method:'POST',signal:ctrl.signal,
+      headers:{'apikey':SUPABASE_KEY,'content-type':'application/json'},
+      body:JSON.stringify({p_secret:ntfyTopic,p_state:state})
+    });
+    if(!res.ok)throw new Error(`Supabase realtime HTTP ${res.status}`);
+  }catch(e){console.log('realtime state publish failed',String(e?.message||e));}
+  finally{clearTimeout(timer);}
+}
+"""
+          if 'async function publishRealtimeState' not in s:
+              if fn_marker not in s: raise SystemExit('function marker missing')
+              s=s.replace(fn_marker,fn+fn_marker,1)
+
+          old="""async function saveState(state){
+  state.updatedAt=new Date().toISOString();
+  await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\\n','Update fast Pokemon watcher state [skip ci]');
+}
+"""
+          new="""async function saveState(state){
+  state.updatedAt=new Date().toISOString();
+  await publishRealtimeState(state);
+  await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\\n','Update fast Pokemon watcher state [skip ci]');
+}
+"""
+          if old not in s: raise SystemExit('saveState marker missing')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+          node --check pokemon-drop-radar/fast-watch.mjs
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pokemon-drop-radar/fast-watch.mjs
+          git commit -m "Publish fast state through Supabase realtime"
+          git push
