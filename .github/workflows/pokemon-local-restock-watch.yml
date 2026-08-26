@@ -29,6 +29,8 @@ jobs:
     concurrency:
       group: pokemon-local-restock-${{ github.event_name }}
       cancel-in-progress: true
+    env:
+      BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,14 +45,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-          BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
           LOCAL_WATCH_ONCE: "1"
         run: node pokemon-drop-radar/local-watch.mjs
 
       - name: Watch local Pokemon inventory continuously
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && env.BESTBUY_API_KEY != ''
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-          BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
         run: node pokemon-drop-radar/local-watch.mjs
