@@ -1,0 +1,81 @@
+async function injectLocalUi(state){
+  state.products=state.products||{};
+  for(const key of Object.keys(state.products))if(key.startsWith('local-ui-'))delete state.products[key];
+
+  let local=null;
+  try{
+    local=await readBranchJson(STATE_BRANCH,'pokemon-drop-radar/local-state.json',null);
+  }catch(e){
+    console.log('local UI overlay read failed',String(e?.message||e));
+    return;
+  }
+  if(!local||typeof local!=='object')return;
+
+  const zone=local.zone&&typeof local.zone==='object'?local.zone:{};
+  const postalCode=String(zone.postalCode||'33617');
+  const radiusMiles=Number(zone.radiusMiles||15);
+  const providers=Array.isArray(local.providers)?local.providers:[];
+  const observations=Array.isArray(local.observations)?local.observations:[];
+  const providerUrls={
+    'Best Buy':'https://www.bestbuy.com/site/searchpage.jsp?st=Pokemon+TCG',
+    'Target':'https://www.target.com/s?searchTerm=pokemon%20cards',
+    'Walmart':'https://www.walmart.com/search?q=pokemon%20cards'
+  };
+  const healthLabel=h=>({ok:'AUTOMATIC',needs_setup:'NEEDS SETUP',manual_only:'MANUAL ONLY',rate_limited_or_auth:'API ISSUE',error:'ERROR'}[String(h||'')]||'CHECKING');
+  const fastHealth=h=>h==='ok'?'ok':(h==='error'||h==='rate_limited_or_auth'||h==='needs_setup')?'error':'unknown';
+  const slug=s=>String(s||'retailer').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+  for(const provider of providers){
+    const retailer=String(provider?.retailer||'');
+    if(!providerUrls[retailer])continue;
+    const retailerHits=observations.filter(o=>String(o?.retailer||'')===retailer).length;
+    const name=`📍 NEARBY · ${retailer} · ${healthLabel(provider?.health)} · ${retailerHits} hit${retailerHits===1?'':'s'} · ${postalCode} / ${radiusMiles} mi`;
+    state.products[`local-ui-provider-${slug(retailer)}`]={
+      name,
+      retailer,
+      url:providerUrls[retailer],
+      maxPrice:null,
+      status:'unknown',
+      price:null,
+      actionable:false,
+      health:fastHealth(provider?.health),
+      lastProbeAt:provider?.lastCheckedAt||local.updatedAt||null,
+      lastError:provider?.lastError||provider?.note||null,
+      http:null,
+      clearCandidateCount:0
+    };
+  }
+
+  const nearest=[...observations].sort((a,b)=>Number(a?.distanceMiles??999)-Number(b?.distanceMiles??999)).slice(0,12);
+  nearest.forEach((obs,i)=>{
+    const retailer=String(obs?.retailer||'Best Buy');
+    if(!providerUrls[retailer])return;
+    const distance=Number(obs?.distanceMiles);
+    const distanceText=Number.isFinite(distance)?`${distance.toFixed(1)} mi`:'nearby';
+    const stockText=obs?.lowStock?'LOW STOCK':'IN STOCK';
+    const storeName=String(obs?.storeName||'Local store');
+    const productName=String(obs?.productName||obs?.productKey||'Pokemon TCG');
+    const key=`local-ui-hit-${i}-${slug(obs?.productKey||productName)}-${slug(obs?.storeId||storeName)}`;
+    state.products[key]={
+      name:`📍 ${stockText} · ${productName} · ${storeName} · ${distanceText} from ${postalCode}`,
+      retailer,
+      url:typeof obs?.productUrl==='string'?obs.productUrl:providerUrls[retailer],
+      maxPrice:null,
+      status:'in_stock',
+      price:null,
+      actionable:false,
+      health:'ok',
+      lastProbeAt:obs?.observedAt||local.updatedAt||null,
+      lastError:null,
+      http:null,
+      clearCandidateCount:0
+    };
+  });
+}
+
+async function saveState(state){
+  await injectLocalUi(state);
+  state.updatedAt=new Date().toISOString();
+  await publishRealtimeState(state);
+  await writeBranchText(STATE_BRANCH,STATE_PATH,JSON.stringify(state,null,2)+'\n','Update fast Pokemon watcher state [skip ci]');
+}
