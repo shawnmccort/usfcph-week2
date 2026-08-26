@@ -24,13 +24,40 @@ async function injectLocalUi(state){
   const healthLabel=h=>({ok:'AUTOMATIC',needs_setup:'NEEDS SETUP',manual_only:'MANUAL ONLY',rate_limited_or_auth:'API ISSUE',error:'ERROR'}[String(h||'')]||'CHECKING');
   const fastHealth=h=>h==='ok'?'ok':(h==='error'||h==='rate_limited_or_auth'||h==='needs_setup')?'error':'unknown';
   const slug=s=>String(s||'retailer').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const localProducts={};
+
+  const nearest=[...observations].sort((a,b)=>Number(a?.distanceMiles??999)-Number(b?.distanceMiles??999)).slice(0,12);
+  nearest.forEach((obs,i)=>{
+    const retailer=String(obs?.retailer||'Best Buy');
+    if(!providerUrls[retailer])return;
+    const distance=Number(obs?.distanceMiles);
+    const distanceText=Number.isFinite(distance)?`${distance.toFixed(1)} mi`:'nearby';
+    const stockText=obs?.lowStock?'LOW STOCK':'IN STOCK';
+    const storeName=String(obs?.storeName||'Local store');
+    const productName=String(obs?.productName||obs?.productKey||'Pokemon TCG');
+    const key=`local-ui-hit-${i}-${slug(obs?.productKey||productName)}-${slug(obs?.storeId||storeName)}`;
+    localProducts[key]={
+      name:`📍 ${stockText} · ${productName} · ${storeName} · ${distanceText} from ${postalCode}`,
+      retailer,
+      url:typeof obs?.productUrl==='string'?obs.productUrl:providerUrls[retailer],
+      maxPrice:null,
+      status:'in_stock',
+      price:null,
+      actionable:false,
+      health:'ok',
+      lastProbeAt:obs?.observedAt||local.updatedAt||null,
+      lastError:null,
+      http:null,
+      clearCandidateCount:0
+    };
+  });
 
   for(const provider of providers){
     const retailer=String(provider?.retailer||'');
     if(!providerUrls[retailer])continue;
     const retailerHits=observations.filter(o=>String(o?.retailer||'')===retailer).length;
     const name=`📍 NEARBY · ${retailer} · ${healthLabel(provider?.health)} · ${retailerHits} hit${retailerHits===1?'':'s'} · ${postalCode} / ${radiusMiles} mi`;
-    state.products[`local-ui-provider-${slug(retailer)}`]={
+    localProducts[`local-ui-provider-${slug(retailer)}`]={
       name,
       retailer,
       url:providerUrls[retailer],
@@ -46,31 +73,7 @@ async function injectLocalUi(state){
     };
   }
 
-  const nearest=[...observations].sort((a,b)=>Number(a?.distanceMiles??999)-Number(b?.distanceMiles??999)).slice(0,12);
-  nearest.forEach((obs,i)=>{
-    const retailer=String(obs?.retailer||'Best Buy');
-    if(!providerUrls[retailer])return;
-    const distance=Number(obs?.distanceMiles);
-    const distanceText=Number.isFinite(distance)?`${distance.toFixed(1)} mi`:'nearby';
-    const stockText=obs?.lowStock?'LOW STOCK':'IN STOCK';
-    const storeName=String(obs?.storeName||'Local store');
-    const productName=String(obs?.productName||obs?.productKey||'Pokemon TCG');
-    const key=`local-ui-hit-${i}-${slug(obs?.productKey||productName)}-${slug(obs?.storeId||storeName)}`;
-    state.products[key]={
-      name:`📍 ${stockText} · ${productName} · ${storeName} · ${distanceText} from ${postalCode}`,
-      retailer,
-      url:typeof obs?.productUrl==='string'?obs.productUrl:providerUrls[retailer],
-      maxPrice:null,
-      status:'in_stock',
-      price:null,
-      actionable:false,
-      health:'ok',
-      lastProbeAt:obs?.observedAt||local.updatedAt||null,
-      lastError:null,
-      http:null,
-      clearCandidateCount:0
-    };
-  });
+  state.products={...localProducts,...state.products};
 }
 
 async function saveState(state){
