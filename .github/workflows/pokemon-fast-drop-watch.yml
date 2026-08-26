@@ -9,6 +9,8 @@ on:
     paths:
       - "pokemon-drop-radar/fast-products.json"
       - "pokemon-drop-radar/fast-watch.mjs"
+      - "pokemon-drop-radar/fast-watch-with-local-ui.mjs"
+      - "pokemon-drop-radar/local-ui-save-patch.mjsfrag"
       - ".github/workflows/pokemon-fast-drop-watch.yml"
 
 permissions:
@@ -34,12 +36,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FAST_WATCH_ONCE: "1"
-        run: node pokemon-drop-radar/fast-watch.mjs
+        run: node pokemon-drop-radar/fast-watch-with-local-ui.mjs
 
       - name: Watch high-demand Pokemon products continuously
         env:
           GITHUB_TOKEN: ${{ github.token }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: node pokemon-drop-radar/fast-watch.mjs
+        run: node pokemon-drop-radar/fast-watch-with-local-ui.mjs
 
-# Target overnight no-3AM-cutoff restart 2026-08-25 00:23 ET
+# Local UI overlay enabled 2026-08-26
