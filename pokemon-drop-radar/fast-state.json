@@ -1,7 +1,49 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-26T13:11:32.266Z",
+  "updatedAt": "2026-08-26T13:12:17.832Z",
   "products": {
+    "local-ui-provider-best-buy": {
+      "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
+      "retailer": "Best Buy",
+      "url": "https://www.bestbuy.com/site/searchpage.jsp?st=Pokemon+TCG",
+      "maxPrice": null,
+      "status": "unknown",
+      "price": null,
+      "actionable": false,
+      "health": "error",
+      "lastProbeAt": "2026-08-26T07:07:22.692Z",
+      "lastError": "BESTBUY_API_KEY is not configured",
+      "http": null,
+      "clearCandidateCount": 0
+    },
+    "local-ui-provider-target": {
+      "name": "📍 NEARBY · Target · MANUAL ONLY · 0 hits · 33617 / 15 mi",
+      "retailer": "Target",
+      "url": "https://www.target.com/s?searchTerm=pokemon%20cards",
+      "maxPrice": null,
+      "status": "unknown",
+      "price": null,
+      "actionable": false,
+      "health": "unknown",
+      "lastProbeAt": "2026-08-26T07:07:22.692Z",
+      "lastError": "Target supports store-by-store availability on Target.com, but no supported public consumer inventory API is configured.",
+      "http": null,
+      "clearCandidateCount": 0
+    },
+    "local-ui-provider-walmart": {
+      "name": "📍 NEARBY · Walmart · MANUAL ONLY · 0 hits · 33617 / 15 mi",
+      "retailer": "Walmart",
+      "url": "https://www.walmart.com/search?q=pokemon%20cards",
+      "maxPrice": null,
+      "status": "unknown",
+      "price": null,
+      "actionable": false,
+      "health": "unknown",
+      "lastProbeAt": "2026-08-26T07:07:22.692Z",
+      "lastError": "Walmart Marketplace inventory APIs are for sellers and do not expose consumer store inventory for this use.",
+      "http": null,
+      "clearCandidateCount": 0
+    },
     "pokemon-30th-celebration-binder-collection": {
       "name": "30th Celebration Binder Collection",
       "retailer": "Best Buy",
@@ -11,8 +53,8 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-26T13:11:30.325Z",
-      "lastVerifiedAt": "2026-08-26T13:11:30.325Z",
+      "lastProbeAt": "2026-08-26T13:12:17.677Z",
+      "lastVerifiedAt": "2026-08-26T13:12:17.677Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
@@ -438,48 +480,6 @@
           "actionable": false
         }
       ]
-    },
-    "local-ui-provider-best-buy": {
-      "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
-      "retailer": "Best Buy",
-      "url": "https://www.bestbuy.com/site/searchpage.jsp?st=Pokemon+TCG",
-      "maxPrice": null,
-      "status": "unknown",
-      "price": null,
-      "actionable": false,
-      "health": "error",
-      "lastProbeAt": "2026-08-26T07:07:22.692Z",
-      "lastError": "BESTBUY_API_KEY is not configured",
-      "http": null,
-      "clearCandidateCount": 0
-    },
-    "local-ui-provider-target": {
-      "name": "📍 NEARBY · Target · MANUAL ONLY · 0 hits · 33617 / 15 mi",
-      "retailer": "Target",
-      "url": "https://www.target.com/s?searchTerm=pokemon%20cards",
-      "maxPrice": null,
-      "status": "unknown",
-      "price": null,
-      "actionable": false,
-      "health": "unknown",
-      "lastProbeAt": "2026-08-26T07:07:22.692Z",
-      "lastError": "Target supports store-by-store availability on Target.com, but no supported public consumer inventory API is configured.",
-      "http": null,
-      "clearCandidateCount": 0
-    },
-    "local-ui-provider-walmart": {
-      "name": "📍 NEARBY · Walmart · MANUAL ONLY · 0 hits · 33617 / 15 mi",
-      "retailer": "Walmart",
-      "url": "https://www.walmart.com/search?q=pokemon%20cards",
-      "maxPrice": null,
-      "status": "unknown",
-      "price": null,
-      "actionable": false,
-      "health": "unknown",
-      "lastProbeAt": "2026-08-26T07:07:22.692Z",
-      "lastError": "Walmart Marketplace inventory APIs are for sellers and do not expose consumer store inventory for this use.",
-      "http": null,
-      "clearCandidateCount": 0
     }
   }
 }
