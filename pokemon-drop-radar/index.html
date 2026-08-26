@@ -6,7 +6,70 @@
 <meta name="theme-color" content="#070b12">
 <title>Pokémon Drop Radar</title>
 <style>
-:root{color-scheme:dark;--bg:#070b12;--panel:#0d1420;--panel2:#111a28;--text:#eef6ff;--muted:#8797aa;--line:#1c2a3b;--cyan:#58e6ff;--green:#57f3a5;--amber:#ffcc66;--red:#ff7588;--blue:#78a7ff}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% -10%,#112b46 0,transparent 34rem),var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);min-height:100vh}button,input{font:inherit}.wrap{max-width:1100px;margin:auto;padding:22px 16px 60px}.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:800}.hero{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;margin:8px 0 22px}.hero h1{font-size:clamp(30px,7vw,54px);margin:0;letter-spacing:-.045em;line-height:1}.hero p{color:var(--muted);max-width:650px;margin:10px 0 0}.btn{border:1px solid var(--line);background:#111c2a;color:var(--text);border-radius:12px;padding:11px 14px;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#031118}.btn:disabled{opacity:.5}.gridStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}.stat{border:1px solid var(--line);background:rgba(13,20,32,.88);border-radius:16px;padding:14px}.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.stat .v{font-size:28px;font-weight:900;margin-top:3px}.toolbar,.setup{border:1px solid var(--line);background:rgba(13,20,32,.92);border-radius:18px;padding:14px;margin-bottom:14px}.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.toolbar input,.setup input{background:#07101b;color:var(--text);border:1px solid #24364c;border-radius:11px;padding:11px 12px;min-width:0}.toolbar input{width:min(360px,100%)}.setup{display:none}.setup.show{display:block}.setup h2{margin:0 0 5px;font-size:18px}.setup p{margin:0 0 14px;color:var(--muted);font-size:14px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}.field input{width:100%}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}.notice{border:1px solid #31465f;background:#0c1724;border-radius:14px;padding:12px 14px;color:#c9d8e8;font-size:13px;margin-bottom:14px}.notice.warn{border-color:#614c25;color:#ffdda0;background:#1b160c}.notice.bad{border-color:#642b36;color:#ffbbc5;background:#1c0d11}.notice.good{border-color:#255943;color:#a5f5cb;background:#0b1913}.cards{display:grid;gap:12px}.card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(17,26,40,.96),rgba(9,15,25,.96));border-radius:18px;padding:15px}.cardTop{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}.card h3{font-size:17px;margin:0 0 5px;letter-spacing:-.015em}.meta{font-size:12px;color:var(--muted)}.ceiling{font-size:12px;border:1px solid #2b4157;background:#0b1521;padding:6px 8px;border-radius:999px;white-space:nowrap}.listing{display:grid;grid-template-columns:minmax(130px,1.15fr) minmax(115px,.9fr) minmax(85px,.7fr) auto;gap:8px;align-items:center;margin-top:12px;border-top:1px solid rgba(38,55,75,.8);padding-top:12px}.retailer{font-weight:800}.sub{font-size:11px;color:var(--muted);margin-top:3px}.status{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:900}.status.good{color:var(--green)}.status.wait{color:var(--amber)}.status.bad{color:var(--red)}.status.unknown{color:#a9b5c4}.price{font-weight:850}.pill{display:inline-block;font-size:10px;padding:3px 6px;border-radius:999px;margin-left:5px;border:1px solid #294258;color:#b6c8d9}.pill.fp{border-color:#276247;color:#9ef2c3}.pill.blocked{border-color:#6a3a43;color:#ff9cac}.empty{text-align:center;color:var(--muted);padding:36px 15px}.footer{color:#637388;font-size:12px;text-align:center;margin-top:26px;line-height:1.6}.small{font-size:12px;color:var(--muted)}.fresh{color:var(--green)}.stale{color:var(--amber)}
+:root{color-scheme:dark;--bg:#070b12;--panel:#0d1420;--panel2:#111a28;--text:#eef6ff;--muted:#8797aa;--line:#1c2a3b;--cyan:#58e6ff;--green:#57f3a5;--amber:#ffcc66;--red:#ff7588;--blue:#78a7ff}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% -10%,#112b46 0,transparent 34rem),var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);min-height:100vh}
+button,input{font:inherit}
+.wrap{max-width:1100px;margin:auto;padding:22px 16px 60px}
+.eyebrow{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);font-weight:800}
+.hero{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;margin:8px 0 22px}
+.hero h1{font-size:clamp(30px,7vw,54px);margin:0;letter-spacing:-.045em;line-height:1}
+.hero p{color:var(--muted);max-width:650px;margin:10px 0 0}
+.btn{border:1px solid var(--line);background:#111c2a;color:var(--text);border-radius:12px;padding:11px 14px;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.btn.primary{background:var(--cyan);border-color:var(--cyan);color:#031118}
+.btn:disabled{opacity:.5}
+.gridStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.stat{border:1px solid var(--line);background:rgba(13,20,32,.88);border-radius:16px;padding:14px}
+.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+.stat .v{font-size:28px;font-weight:900;margin-top:3px}
+.toolbar,.setup,.localPanel{border:1px solid var(--line);background:rgba(13,20,32,.92);border-radius:18px;padding:14px;margin-bottom:14px}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.toolbar input,.setup input{background:#07101b;color:var(--text);border:1px solid #24364c;border-radius:11px;padding:11px 12px;min-width:0}
+.toolbar input{width:min(360px,100%)}
+.setup{display:none}.setup.show{display:block}
+.setup h2,.localPanel h2{margin:0 0 5px;font-size:18px}
+.setup p{margin:0 0 14px;color:var(--muted);font-size:14px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field label{display:block;color:var(--muted);font-size:12px;margin:0 0 5px}
+.field input{width:100%}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.notice{border:1px solid #31465f;background:#0c1724;border-radius:14px;padding:12px 14px;color:#c9d8e8;font-size:13px;margin-bottom:14px}
+.notice.warn{border-color:#614c25;color:#ffdda0;background:#1b160c}
+.notice.bad{border-color:#642b36;color:#ffbbc5;background:#1c0d11}
+.notice.good{border-color:#255943;color:#a5f5cb;background:#0b1913}
+.cards{display:grid;gap:12px}
+.card{border:1px solid var(--line);background:linear-gradient(145deg,rgba(17,26,40,.96),rgba(9,15,25,.96));border-radius:18px;padding:15px}
+.cardTop{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.card h3{font-size:17px;margin:0 0 5px;letter-spacing:-.015em}
+.meta{font-size:12px;color:var(--muted)}
+.ceiling{font-size:12px;border:1px solid #2b4157;background:#0b1521;padding:6px 8px;border-radius:999px;white-space:nowrap}
+.listing{display:grid;grid-template-columns:minmax(130px,1.15fr) minmax(115px,.9fr) minmax(85px,.7fr) auto;gap:8px;align-items:center;margin-top:12px;border-top:1px solid rgba(38,55,75,.8);padding-top:12px}
+.retailer{font-weight:800}
+.sub{font-size:11px;color:var(--muted);margin-top:3px}
+.status{font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:900}
+.status.good{color:var(--green)}.status.wait{color:var(--amber)}.status.bad{color:var(--red)}.status.unknown{color:#a9b5c4}
+.price{font-weight:850}
+.pill{display:inline-block;font-size:10px;padding:3px 6px;border-radius:999px;margin-left:5px;border:1px solid #294258;color:#b6c8d9}
+.pill.fp{border-color:#276247;color:#9ef2c3}.pill.blocked{border-color:#6a3a43;color:#ff9cac}
+.empty{text-align:center;color:var(--muted);padding:22px 15px}
+.footer{color:#637388;font-size:12px;text-align:center;margin-top:26px;line-height:1.6}
+.small{font-size:12px;color:var(--muted)}.fresh{color:var(--green)}.stale{color:var(--amber)}
+.localHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.localHead p{margin:2px 0 0;color:var(--muted);font-size:12px}
+.localStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.localStat{border:1px solid var(--line);background:#0a1320;border-radius:12px;text-align:center;padding:9px}
+.localStat b{display:block;font-size:20px}.localStat span{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.providers{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.provider{font-size:10px;font-weight:800;border-radius:999px;padding:5px 8px;border:1px solid #31465f;color:#c9d8e8;background:#0c1724}
+.provider.good{border-color:#255943;color:#a5f5cb;background:#0b1913}
+.provider.warn{border-color:#614c25;color:#ffdda0;background:#1b160c}
+.provider.bad{border-color:#642b36;color:#ffbbc5;background:#1c0d11}
+.localRows{display:grid;gap:8px;margin-top:12px}
+.localRow{border:1px solid var(--line);background:#0a1320;border-radius:13px;padding:11px}
+.localRowTop{display:flex;gap:8px;align-items:center}.localRowTop strong{flex:1;min-width:0}.stock{font-size:10px;font-weight:900;text-transform:uppercase;border:1px solid #255943;background:#0b1913;color:#a5f5cb;border-radius:999px;padding:4px 7px}
+.localStore{font-size:12px;font-weight:800;margin-top:7px}.localAddress,.localObserved{font-size:11px;color:var(--muted);margin-top:3px}
+.localFoot{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;font-size:10px;color:var(--muted)}
+.localFoot a{color:var(--cyan)}
 @media(max-width:720px){.hero{align-items:flex-start;flex-direction:column}.gridStats{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr}.listing{grid-template-columns:1fr 1fr}.listing .open{grid-column:1/-1;width:100%}.stat .v{font-size:24px}}
 </style>
 </head>
@@ -14,8 +77,8 @@
 <div class="wrap">
   <div class="eyebrow">⚡ Pokémon Drop Radar</div>
   <div class="hero">
-    <div><h1>Stock Watcher</h1><p>First-party Pokémon availability across Best Buy, Walmart, Target and GameStop, filtered by your price ceilings.</p></div>
-    <button class="btn primary" id="refreshBtn">↻ Refresh</button>
+    <div><h1>Stock Watcher</h1><p>First-party Pokémon availability across Best Buy, Walmart, Target and GameStop, plus nearby store restocks around Temple Terrace.</p></div>
+    <button class="btn primary" id="refreshBtn">↻ Refresh all</button>
   </div>
 
   <div id="connectionNotice" class="notice warn">Enter your private dashboard key below to load live watcher state.</div>
@@ -35,6 +98,25 @@
     <div class="stat"><div class="k">Listings</div><div class="v" id="listingCount">13</div></div>
     <div class="stat"><div class="k">Actionable</div><div class="v" id="actionCount">0</div></div>
     <div class="stat"><div class="k">Backend</div><div class="v" id="backendAge">—</div></div>
+  </section>
+
+  <section class="localPanel" id="localPanel">
+    <div class="localHead">
+      <div>
+        <h2>📍 Nearby restocks</h2>
+        <p id="localZone">15 miles around 33617 · Temple Terrace</p>
+      </div>
+      <button class="btn" id="localRefreshBtn">↻ Local</button>
+    </div>
+    <div class="localStats">
+      <div class="localStat"><b id="localProducts">—</b><span>Products</span></div>
+      <div class="localStat"><b id="localStores">—</b><span>Stores</span></div>
+      <div class="localStat"><b id="localHits">—</b><span>Hits</span></div>
+    </div>
+    <div class="providers" id="providers"><span class="provider">Loading providers…</span></div>
+    <div id="localNotice" class="notice warn" style="margin-top:12px;margin-bottom:0">Loading local inventory state…</div>
+    <div class="localRows" id="localRows"></div>
+    <div class="localFoot" id="localFoot">Best Buy local availability uses the official Best Buy Developer API when configured. Target and Walmart remain manual-only unless a supported consumer inventory source is available.</div>
   </section>
 
   <section class="toolbar">
@@ -62,7 +144,8 @@ const WATCHLIST=[
  {n:"Scarlet & Violet Elite Trainer Box (Red or Purple)",k:"pokemon-scarlet-violet-base-etb",t:"elite_trainer_box",r:"Walmart",u:"https://www.walmart.com/ip/2668346140",q:"2668346140",m:70}
 ];
 const ACTIONABLE=new Set(["in_stock","add_to_cart","reservation_open","invite_open","preorder_open","queue_open","drawing_open"]);
-let live=null;
+const LOCAL_STATE_URL="https://raw.githubusercontent.com/shawnmccort/usfcph-week2/pokemon-fast-state/pokemon-drop-radar/local-state.json";
+let live=null,localState=null;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
 const statusClass=s=>ACTIONABLE.has(s)?"good":(["coming_soon","out_of_stock","unavailable"].includes(s)?"wait":(s==="blocked"||s==="error"?"bad":"unknown"));
@@ -70,6 +153,8 @@ const label=s=>String(s||"unknown").replaceAll("_"," ");
 function stateMap(){const m=new Map();for(const p of live?.p||[])m.set(p.k,p);return m}
 function listingUrl(prod,row){return row?.u||prod.u}
 function listingSku(prod,row){return row?.q||prod.q||"—"}
+function ageMinutes(ts){return ts?Math.max(0,Math.round((Date.now()-new Date(ts).getTime())/60000)):null}
+function ageLabel(ts){const mins=ageMinutes(ts);return mins===null?"—":mins<1?"now":`${mins}m`}
 function render(){
  const query=$("#search").value.trim().toLowerCase(); const sm=stateMap(); let listings=0,action=0;
  const html=WATCHLIST.filter(p=>!query||`${p.n} ${p.r} ${p.q}`.toLowerCase().includes(query)).map(p=>{
@@ -80,7 +165,6 @@ function render(){
  $("#cards").innerHTML=html||'<div class="empty">No matching products.</div>'; $("#listingCount").textContent=listings; $("#actionCount").textContent=action;
 }
 function setNotice(text,type="warn"){$("#connectionNotice").className=`notice ${type}`;$("#connectionNotice").textContent=text}
-function ageLabel(ts){if(!ts)return"—";const mins=Math.max(0,Math.round((Date.now()-new Date(ts).getTime())/60000));return mins<1?"now":`${mins}m`}
 async function loadLive(){
  const key=localStorage.getItem("pokemonRadarStateKey"); if(!key){setNotice("Enter your private dashboard key below to load live watcher state.","warn");return}
  $("#refreshBtn").disabled=true; $("#refreshBtn").textContent="Refreshing…";
@@ -90,16 +174,35 @@ async function loadLive(){
    const text=await res.text(); const events=text.trim().split(/\n+/).filter(Boolean).map(x=>{try{return JSON.parse(x)}catch{return null}}).filter(Boolean);
    const msgs=events.filter(x=>x.event==="message"&&Array.isArray(x.tags)&&x.tags.includes("state")); if(!msgs.length)throw new Error("No live state has been published yet");
    const latest=msgs.sort((a,b)=>(a.time||0)-(b.time||0)).at(-1); live=JSON.parse(latest.message);
-   const mins=Math.max(0,Math.round((Date.now()-new Date(live.t).getTime())/60000)); $("#backendAge").textContent=ageLabel(live.t); $("#backendAge").className=`v ${mins<=10?"fresh":"stale"}`; $("#lastState").textContent=new Date(live.t).toLocaleString();
+   const mins=ageMinutes(live.t); $("#backendAge").textContent=ageLabel(live.t); $("#backendAge").className=`v ${mins<=10?"fresh":"stale"}`; $("#lastState").textContent=new Date(live.t).toLocaleString();
    setNotice(mins<=10?`Connected · backend run ${live.run} · state is fresh`:`Connected, but the last backend state is ${mins} minutes old`,mins<=10?"good":"warn"); render();
  }catch(err){setNotice(`Could not load live state: ${err.message}`,"bad");}
- finally{$("#refreshBtn").disabled=false;$("#refreshBtn").textContent="↻ Refresh"}
+ finally{$("#refreshBtn").disabled=false;$("#refreshBtn").textContent="↻ Refresh all"}
+}
+function providerLabel(h){return h==="ok"?"Automatic":h==="needs_setup"?"Needs setup":h==="manual_only"?"Manual only":h==="rate_limited_or_auth"?"API issue":h==="error"?"Error":"Checking"}
+function providerTone(h){return h==="ok"?"good":(h==="error"||h==="rate_limited_or_auth")?"bad":"warn"}
+function renderLocal(){
+ const s=localState;if(!s)return;
+ $("#localZone").textContent=`${s.zone?.radiusMiles??15} miles around ${s.zone?.postalCode??"33617"} · ${s.zone?.label??"Temple Terrace"}`;
+ $("#localProducts").textContent=s.summary?.productsWithLocalStock??0;$("#localStores").textContent=s.summary?.storesWithStock??0;$("#localHits").textContent=s.summary?.observations??0;
+ $("#providers").innerHTML=(s.providers||[]).map(p=>`<span class="provider ${providerTone(p.health)}" title="${esc(p.lastError||p.note||"")}">${esc(p.retailer)}: ${esc(providerLabel(p.health))}</span>`).join("")||'<span class="provider">No provider status</span>';
+ const mins=ageMinutes(s.updatedAt);const obs=[...(s.observations||[])].sort((a,b)=>(a.distanceMiles??999)-(b.distanceMiles??999)||String(a.productName).localeCompare(String(b.productName)));
+ if(mins!==null&&mins>10){$("#localNotice").className="notice bad";$("#localNotice").textContent=`Local inventory state is ${mins} minutes old; treat it as stale.`}
+ else if(obs.length){$("#localNotice").className="notice good";$("#localNotice").textContent=`${obs.length} confirmed nearby inventory signal${obs.length===1?"":"s"} · updated ${ageLabel(s.updatedAt)} ago`}
+ else{$("#localNotice").className="notice warn";$("#localNotice").textContent="No confirmed local inventory is currently being reported. Manual-only retailers are not being checked automatically, so this does not mean every store is out of stock."}
+ $("#localRows").innerHTML=obs.map(o=>`<div class="localRow"><div class="localRowTop"><strong>📍 ${esc(o.productName)}</strong><span class="stock">${o.lowStock?"Low stock":"In stock"}</span></div><div class="localStore">${esc(o.storeName)} · ${Number(o.distanceMiles??0).toFixed(1)} mi</div><div class="localAddress">${esc([o.address,o.city,o.region,o.postalCode].filter(Boolean).join(", "))}</div><div class="localObserved">Official retailer signal · observed ${new Date(o.observedAt).toLocaleString()}</div>${o.productUrl?`<a class="btn" style="margin-top:8px;width:100%" target="_blank" rel="noopener" href="${esc(o.productUrl)}">Open product ↗</a>`:""}</div>`).join("");
+}
+async function loadLocal(){
+ $("#localRefreshBtn").disabled=true;$("#localRefreshBtn").textContent="Loading…";
+ try{const res=await fetch(`${LOCAL_STATE_URL}?t=${Date.now()}`,{cache:"no-store"});if(!res.ok)throw new Error(`Local state HTTP ${res.status}`);localState=await res.json();renderLocal()}
+ catch(err){$("#localNotice").className="notice bad";$("#localNotice").textContent=`Could not load local inventory: ${err.message}`}
+ finally{$("#localRefreshBtn").disabled=false;$("#localRefreshBtn").textContent="↻ Local"}
 }
 function syncSetup(){const state=localStorage.getItem("pokemonRadarStateKey")||"";const alert=localStorage.getItem("pokemonRadarAlertTopic")||"";$("#stateKey").value=state;$("#alertTopic").value=alert;$("#setup").classList.toggle("show",!state);const a=$("#openAlert");if(alert){a.href=`https://ntfy.sh/${encodeURIComponent(alert)}`;a.style.display="inline-flex"}else a.style.display="none"}
 $("#saveKeys").onclick=()=>{const state=$("#stateKey").value.trim(),alert=$("#alertTopic").value.trim();if(state)localStorage.setItem("pokemonRadarStateKey",state);if(alert)localStorage.setItem("pokemonRadarAlertTopic",alert);syncSetup();loadLive()};
 $("#clearKeys").onclick=()=>{localStorage.removeItem("pokemonRadarStateKey");localStorage.removeItem("pokemonRadarAlertTopic");live=null;syncSetup();setNotice("Private keys cleared from this browser.","warn");render()};
-$("#refreshBtn").onclick=loadLive;$("#search").oninput=render;$("#connectionNotice").onclick=()=>$("#setup").classList.toggle("show");
-syncSetup();render();loadLive();setInterval(loadLive,60000);
+$("#refreshBtn").onclick=()=>{loadLive();loadLocal()};$("#localRefreshBtn").onclick=loadLocal;$("#search").oninput=render;$("#connectionNotice").onclick=()=>$("#setup").classList.toggle("show");
+syncSetup();render();loadLive();loadLocal();setInterval(loadLive,60000);setInterval(loadLocal,30000);
 </script>
 </body>
 </html>
