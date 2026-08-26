@@ -1,0 +1,56 @@
+name: Pokemon Local Restock Watch
+
+on:
+  schedule:
+    - cron: "13 0,6,12,18 * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "pokemon-drop-radar/local-restock-config.json"
+      - "pokemon-drop-radar/local-watch.mjs"
+      - "pokemon-drop-radar/local-watch.test.mjs"
+      - ".github/workflows/pokemon-local-restock-watch.yml"
+  push:
+    branches: [master]
+    paths:
+      - "pokemon-drop-radar/local-restock-config.json"
+      - "pokemon-drop-radar/local-watch.mjs"
+      - "pokemon-drop-radar/local-watch.test.mjs"
+      - "pokemon-drop-radar/fast-products.json"
+      - ".github/workflows/pokemon-local-restock-watch.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  local-restock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    concurrency:
+      group: pokemon-local-restock-${{ github.event_name }}
+      cancel-in-progress: true
+    env:
+      BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit test local restock parser
+        run: node pokemon-drop-radar/local-watch.test.mjs
+
+      - name: Preflight local inventory checks
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          LOCAL_WATCH_ONCE: "1"
+        run: node pokemon-drop-radar/local-watch.mjs
+
+      - name: Watch local Pokemon inventory continuously
+        if: github.event_name != 'pull_request' && env.BESTBUY_API_KEY != ''
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: node pokemon-drop-radar/local-watch.mjs
