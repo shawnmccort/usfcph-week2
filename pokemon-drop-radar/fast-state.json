@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-26T13:05:14.477Z",
+  "updatedAt": "2026-08-26T13:05:39.360Z",
   "products": {
     "pokemon-30th-celebration-binder-collection": {
       "name": "30th Celebration Binder Collection",
@@ -11,8 +11,8 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-26T13:05:02.405Z",
-      "lastVerifiedAt": "2026-08-26T13:05:02.405Z",
+      "lastProbeAt": "2026-08-26T13:05:39.360Z",
+      "lastVerifiedAt": "2026-08-26T13:05:39.360Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
