@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "updatedAt": "2026-08-26T02:27:02.127Z",
+  "zone": {
+    "label": "Temple Terrace",
+    "postalCode": "33617",
+    "radiusMiles": 15
+  },
+  "providers": [
+    {
+      "retailer": "Best Buy",
+      "mode": "official_api",
+      "health": "needs_setup",
+      "note": null,
+      "lastCheckedAt": null,
+      "lastError": "BESTBUY_API_KEY is not configured"
+    },
+    {
+      "retailer": "Target",
+      "mode": "manual_official_web",
+      "health": "manual_only",
+      "note": "Target supports store-by-store availability on Target.com, but no supported public consumer inventory API is configured.",
+      "lastCheckedAt": null,
+      "lastError": null
+    },
+    {
+      "retailer": "Walmart",
+      "mode": "manual_official_web",
+      "health": "manual_only",
+      "note": "Walmart Marketplace inventory APIs are for sellers and do not expose consumer store inventory for this use.",
+      "lastCheckedAt": null,
+      "lastError": null
+    }
+  ],
+  "summary": {
+    "automaticRetailers": 0,
+    "productsChecked": 10,
+    "productsWithLocalStock": 0,
+    "storesWithStock": 0,
+    "observations": 0
+  },
+  "observations": []
+}
