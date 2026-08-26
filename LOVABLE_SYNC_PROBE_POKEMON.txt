@@ -1,0 +1,2 @@
+Safe sync probe for Lovable project pokemon-drop-alert-staging.
+No runtime code is changed by this file.
