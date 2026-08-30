@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-08-30T10:44:56.626Z",
+  "updatedAt": "2026-08-30T13:44:04.957Z",
   "products": {
     "local-ui-provider-best-buy": {
       "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
@@ -11,7 +11,7 @@
       "price": null,
       "actionable": false,
       "health": "error",
-      "lastProbeAt": "2026-08-30T05:21:02.285Z",
+      "lastProbeAt": "2026-08-30T11:52:13.578Z",
       "lastError": "BESTBUY_API_KEY is not configured",
       "http": null,
       "clearCandidateCount": 0
@@ -25,7 +25,7 @@
       "price": null,
       "actionable": false,
       "health": "unknown",
-      "lastProbeAt": "2026-08-30T05:21:02.285Z",
+      "lastProbeAt": "2026-08-30T11:52:13.578Z",
       "lastError": "Target supports store-by-store availability on Target.com, but no supported public consumer inventory API is configured.",
       "http": null,
       "clearCandidateCount": 0
@@ -39,7 +39,7 @@
       "price": null,
       "actionable": false,
       "health": "unknown",
-      "lastProbeAt": "2026-08-30T05:21:02.285Z",
+      "lastProbeAt": "2026-08-30T11:52:13.578Z",
       "lastError": "Walmart Marketplace inventory APIs are for sellers and do not expose consumer store inventory for this use.",
       "http": null,
       "clearCandidateCount": 0
@@ -53,8 +53,8 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-08-30T10:44:46.955Z",
-      "lastVerifiedAt": "2026-08-30T10:44:46.955Z",
+      "lastProbeAt": "2026-08-30T13:44:04.815Z",
+      "lastVerifiedAt": "2026-08-30T13:44:04.815Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
