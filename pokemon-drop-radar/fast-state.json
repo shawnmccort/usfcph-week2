@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-08T04:11:00.678Z",
+  "updatedAt": "2026-09-08T04:11:44.741Z",
   "products": {
     "local-ui-provider-best-buy": {
       "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
@@ -53,8 +53,8 @@
       "price": 31.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-09-08T04:11:00.447Z",
-      "lastVerifiedAt": "2026-09-08T04:11:00.447Z",
+      "lastProbeAt": "2026-09-08T04:11:44.522Z",
+      "lastVerifiedAt": "2026-09-08T04:11:44.522Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
