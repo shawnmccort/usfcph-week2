@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-10T14:18:20.843Z",
+  "updatedAt": "2026-09-10T14:18:27.686Z",
   "products": {
     "local-ui-provider-best-buy": {
       "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
@@ -107,8 +107,8 @@
       "price": 21.99,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-09-10T14:18:04.186Z",
-      "lastVerifiedAt": "2026-09-10T14:18:04.186Z",
+      "lastProbeAt": "2026-09-10T14:18:23.607Z",
+      "lastVerifiedAt": "2026-09-10T14:18:23.607Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
@@ -294,17 +294,17 @@
       "retailer": "Best Buy",
       "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-scarlet-violet-prismatic-evolutions-booster-bundle/JJG2TL23JK/sku/6608206",
       "maxPrice": 40,
-      "status": "preorder_open",
+      "status": "unknown",
       "price": 26.94,
-      "actionable": true,
+      "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-09-10T14:18:05.669Z",
-      "lastVerifiedAt": "2026-09-10T14:18:05.669Z",
+      "lastProbeAt": "2026-09-10T14:18:25.629Z",
+      "lastVerifiedAt": "2026-09-10T14:18:25.629Z",
       "lastError": null,
       "http": 200,
-      "clearCandidateCount": 1,
-      "clearCandidateStatus": "unknown",
-      "clearCandidatePrice": 26.94,
+      "clearCandidateCount": 0,
+      "clearCandidateStatus": null,
+      "clearCandidatePrice": null,
       "lastEvidenceVerdict": null,
       "lastEvidenceProbes": null,
       "lastLiveEvidence": {
@@ -312,8 +312,13 @@
         "verdict": null,
         "probes": null
       },
-      "ntfySentForLive": true,
-      "ntfyPending": false
+      "ntfySentForLive": false,
+      "ntfyPending": false,
+      "lastClearEvidence": {
+        "at": "2026-09-10T14:18:25.629Z",
+        "verdict": null,
+        "probes": null
+      }
     },
     "pokemon-ascended-heroes-etb": {
       "name": "Ascended Heroes Elite Trainer Box",
