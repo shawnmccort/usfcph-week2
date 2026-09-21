@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-21T04:04:58.600Z",
+  "updatedAt": "2026-09-21T04:05:00.702Z",
   "products": {
     "local-ui-provider-best-buy": {
       "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
@@ -152,8 +152,8 @@
       "price": null,
       "actionable": false,
       "health": "ok",
-      "lastProbeAt": "2026-09-21T04:04:28.867Z",
-      "lastVerifiedAt": "2026-09-21T04:04:28.867Z",
+      "lastProbeAt": "2026-09-21T04:05:00.599Z",
+      "lastVerifiedAt": "2026-09-21T04:05:00.599Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
@@ -162,11 +162,11 @@
       "lastEvidenceVerdict": "not_actionable",
       "lastEvidenceProbes": [
         {
-          "checkedAt": "2026-09-21T04:04:28.340Z",
+          "checkedAt": "2026-09-21T04:05:00.093Z",
           "http": 200,
           "finalUrl": "https://www.target.com/p/pok-233-mon-trading-card-game-30th-celebration-sylveon-ex-box/-/A-1010892068",
-          "bodyBytes": 314771,
-          "bodySha256": "36c7b1eb6e13e77c6cd0ab56a6f146f69cc3ae110ed42c658a8093adca29370a",
+          "bodyBytes": 315625,
+          "bodySha256": "d6db770d24f3f80d95d46fbae4f98247002c4200c23f435696ef0c76c89cb866",
           "primaryStatus": "add_to_cart",
           "structuredStatus": null,
           "primaryPrice": null,
