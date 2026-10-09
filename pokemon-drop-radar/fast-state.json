@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-09T09:14:30.558Z",
+  "updatedAt": "2026-10-09T09:14:37.723Z",
   "products": {
     "local-ui-provider-best-buy": {
       "name": "📍 NEARBY · Best Buy · NEEDS SETUP · 0 hits · 33617 / 15 mi",
@@ -134,19 +134,19 @@
       "retailer": "Best Buy",
       "url": "https://www.bestbuy.com/product/pokemon-trading-card-game-mega-evolution-pitch-black-booster-box-36-packs/JJG2TL8C7R/sku/6678362",
       "maxPrice": 180,
-      "status": "unknown",
+      "status": "preorder_open",
       "price": 160.99,
-      "actionable": false,
+      "actionable": true,
       "health": "ok",
-      "lastProbeAt": "2026-10-09T09:14:15.613Z",
-      "lastVerifiedAt": "2026-10-09T09:14:15.613Z",
+      "lastProbeAt": "2026-10-09T09:14:32.202Z",
+      "lastVerifiedAt": "2026-10-09T09:14:32.202Z",
       "lastError": null,
       "http": 200,
       "clearCandidateCount": 0,
       "clearCandidateStatus": null,
       "clearCandidatePrice": null,
       "ntfySentForLive": false,
-      "ntfyPending": false,
+      "ntfyPending": true,
       "lastEvidenceVerdict": null,
       "lastEvidenceProbes": null,
       "lastClearEvidence": {
@@ -155,7 +155,7 @@
         "probes": null
       },
       "lastLiveEvidence": {
-        "at": "2026-10-09T08:59:13.578Z",
+        "at": "2026-10-09T09:14:32.202Z",
         "verdict": null,
         "probes": null
       }
